@@ -13,5 +13,8 @@
         "corejs": "3.6.5",
       }
     ]
+  ],
+  "plugins": [
+    "@babel/plugin-transform-modules-commonjs"
   ]
 }
