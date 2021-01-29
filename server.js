@@ -2,10 +2,10 @@ const express = require('express')
 const app = express()
 const PORT = 3004
 
-// View engine setup 
+// serve static files from /public
 app.set('view engine', 'ejs')
+app.use(express.static('public'))
 
-// Without middleware 
 app.get('/', function(req, res) {
     res.render('index')
 })
