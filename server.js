@@ -1,14 +1,16 @@
-const http = require('http')
+const express = require('express')
+const app = express()
+const PORT = 3004
 
-const hostname = '127.0.0.1'
-const port = 3004;
+// View engine setup 
+app.set('view engine', 'ejs')
 
-const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain')
-    res.end('Heyyyyy')
+// Without middleware 
+app.get('/', function(req, res) {
+    res.render('index')
 })
 
-server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`)
+app.listen(PORT, function(err){
+    if (err) console.log(err)
+    console.log(`Server listening on PORT ${PORT}`)
 })
