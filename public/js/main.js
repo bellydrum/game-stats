@@ -751,9 +751,15 @@ try {
 },{}],2:[function(require,module,exports){
 "use strict";
 
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 var _RequestUtil = require("./utils/RequestUtil.es6");
 
-var _charts = require("./charts.es6");
+var charts = _interopRequireWildcard(require("./charts.es6"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -1004,16 +1010,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
        *
        * General tools for app functionality
        */
-      getInitialDataLoad: function () {
-        var _getInitialDataLoad = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+      getGamesData: function () {
+        var _getGamesData = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
           return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  console.log('about to make call');
-                  return _context.abrupt("return", app.req('http://buttcentral.net/games'));
+                  _context.t0 = JSON;
+                  _context.next = 3;
+                  return app.req('http://buttcentral.net/games');
 
-                case 2:
+                case 3:
+                  _context.t1 = _context.sent;
+                  return _context.abrupt("return", _context.t0.parse.call(_context.t0, _context.t1));
+
+                case 5:
                 case "end":
                   return _context.stop();
               }
@@ -1021,11 +1032,39 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           }, _callee);
         }));
 
-        function getInitialDataLoad() {
-          return _getInitialDataLoad.apply(this, arguments);
+        function getGamesData() {
+          return _getGamesData.apply(this, arguments);
         }
 
-        return getInitialDataLoad;
+        return getGamesData;
+      }(),
+      getCurrentGameData: function () {
+        var _getCurrentGameData = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+          return regeneratorRuntime.wrap(function _callee2$(_context2) {
+            while (1) {
+              switch (_context2.prev = _context2.next) {
+                case 0:
+                  _context2.t0 = JSON;
+                  _context2.next = 3;
+                  return app.req('http://buttcentral.net/latest_activity');
+
+                case 3:
+                  _context2.t1 = _context2.sent;
+                  return _context2.abrupt("return", _context2.t0.parse.call(_context2.t0, _context2.t1));
+
+                case 5:
+                case "end":
+                  return _context2.stop();
+              }
+            }
+          }, _callee2);
+        }));
+
+        function getCurrentGameData() {
+          return _getCurrentGameData.apply(this, arguments);
+        }
+
+        return getCurrentGameData;
       }(),
 
       /**
@@ -1034,37 +1073,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
        * The first and only function to be executed on page load.
        */
       activate: function () {
-        var _activate = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-          var games;
-          return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        var _activate = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+          return regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
-              switch (_context2.prev = _context2.next) {
+              switch (_context3.prev = _context3.next) {
                 case 0:
                   /**
                    * Executes the following block in order to "activate" the application on page load.
                    *
                    * All functions executed below are defined in the INIT FUNCTIONS section.
                    */
-                  console.log('started app');
                   app.cookie = app.createCookieWrapper();
                   app.activateLinks();
                   app.activateListeners();
-                  console.log('about to get data');
-                  _context2.next = 7;
-                  return app.getInitialDataLoad();
+                  _context3.next = 5;
+                  return app.start();
 
-                case 7:
-                  games = _context2.sent;
-                  console.log('got data:');
-                  console.log(games);
-                  (0, _charts.renderCharts)(games);
-
-                case 11:
+                case 5:
                 case "end":
-                  return _context2.stop();
+                  return _context3.stop();
               }
             }
-          }, _callee2);
+          }, _callee3);
         }));
 
         function activate() {
@@ -1072,36 +1102,143 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }
 
         return activate;
+      }(),
+
+      /**
+       * PAGE LOAD
+       *
+       * Behavior for the initial page load.
+       */
+      start: function () {
+        var _start = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+          var games, currentGameData;
+          return regeneratorRuntime.wrap(function _callee4$(_context4) {
+            while (1) {
+              switch (_context4.prev = _context4.next) {
+                case 0:
+                  _context4.next = 2;
+                  return app.getGamesData();
+
+                case 2:
+                  games = _context4.sent;
+                  _context4.next = 5;
+                  return app.getCurrentGameData();
+
+                case 5:
+                  currentGameData = _context4.sent;
+                  charts.renderMostPlayedGames(games);
+
+                case 7:
+                case "end":
+                  return _context4.stop();
+              }
+            }
+          }, _callee4);
+        }));
+
+        function start() {
+          return _start.apply(this, arguments);
+        }
+
+        return start;
       }()
     }; // Application entry point.
 
-    app.activate();
+    app.activate()["catch"](console.error);
   });
 })();
 
 },{"./charts.es6":3,"./utils/RequestUtil.es6":6}],3:[function(require,module,exports){
 "use strict";
 
-function renderCharts(games) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.renderMostPlayedGames = renderMostPlayedGames;
+
+function renderMostPlayedGames(games) {
+  var gameTitlesSortedByTimePlayed = Object.entries(games).map(function (game) {
+    return [game[1].name, game[1].play_time_seconds];
+  }).sort(function (a, b) {
+    return b[1] - a[1];
+  });
+  var tenMostPlayedGames = gameTitlesSortedByTimePlayed.slice(0, 10).map(function (name) {
+    return games[name[0]];
+  });
+  tenMostPlayedGames.forEach(function (game) {
+    return console.log(game);
+  });
   var options = {
-    chart: {
-      type: 'line'
-    },
     series: [{
-      name: 'sales',
-      data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
+      data: tenMostPlayedGames.map(function (game) {
+        return game.play_time_seconds;
+      })
     }],
+    chart: {
+      type: 'bar',
+      height: 380
+    },
+    plotOptions: {
+      bar: {
+        barHeight: '100%',
+        distributed: true,
+        horizontal: true,
+        dataLabels: {
+          position: 'bottom'
+        }
+      }
+    },
+    colors: ['#33b2df', '#546E7A', '#d4526e', '#13d8aa', '#A5978B', '#2b908f', '#f9a3a4', '#90ee7e', '#f48024', '#69d2e7'],
+    dataLabels: {
+      enabled: true,
+      textAnchor: 'start',
+      style: {
+        colors: ['#444']
+      },
+      formatter: function formatter(val, opt) {
+        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val;
+      },
+      offsetX: 0,
+      dropShadow: {
+        enabled: false
+      }
+    },
+    stroke: {
+      width: 1,
+      colors: ['#fff']
+    },
     xaxis: {
-      categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
+      categories: tenMostPlayedGames.map(function (game) {
+        return game.name;
+      })
+    },
+    yaxis: {
+      labels: {
+        show: false
+      }
+    },
+    title: {
+      text: 'Top ten most-played games',
+      align: 'center',
+      floating: true
+    },
+    tooltip: {
+      theme: 'dark',
+      x: {
+        show: false
+      },
+      y: {
+        title: {
+          formatter: function formatter() {
+            return '';
+          }
+        }
+      }
     }
   };
   var chart = new ApexCharts(document.querySelector("#gameplayTimeChart"), options);
   chart.render();
 }
-
-module.exports = {
-  renderCharts: renderCharts
-};
 
 },{}],4:[function(require,module,exports){
 "use strict";
@@ -1132,8 +1269,6 @@ function request(url) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var responseType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'text';
   var async = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
-  console.log("url: ".concat(url));
-  console.log("method: ".concat(method));
   return new Promise(function (resolve, reject) {
     var xhttp = new XMLHttpRequest();
 
@@ -1145,21 +1280,7 @@ function request(url) {
 
     xhttp.open(method, url, async);
     xhttp.send();
-  }); // axios.get('https://api.github.com/users/mapbox')
-  //   .then(response => {
-  //     console.log(response.data.created_at);
-  //   });
-  // try {
-  //   return await $.ajax({
-  //     url: url,
-  //     type: requestType,
-  //     data: data,
-  //     success: result => { return result },
-  //     error: error => { return error }
-  //   })
-  // } catch(error) {
-  //   throw error
-  // }
+  })["catch"](console.error);
 }
 
 module.exports = {

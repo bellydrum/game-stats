@@ -15,9 +15,6 @@
  * @about - standardized wrapper for requests
  */
 function request(url, method='GET', data={}, responseType='text', async=true) {
-  console.log(`url: ${url}`)
-  console.log(`method: ${method}`)
-
   return new Promise((resolve, reject) => {
     const xhttp = new XMLHttpRequest()
     xhttp.onreadystatechange = function() {
@@ -27,25 +24,7 @@ function request(url, method='GET', data={}, responseType='text', async=true) {
     }
     xhttp.open(method, url, async);
     xhttp.send();
-  })
-
-
-  // axios.get('https://api.github.com/users/mapbox')
-  //   .then(response => {
-  //     console.log(response.data.created_at);
-  //   });
-
-  // try {
-  //   return await $.ajax({
-  //     url: url,
-  //     type: requestType,
-  //     data: data,
-  //     success: result => { return result },
-  //     error: error => { return error }
-  //   })
-  // } catch(error) {
-  //   throw error
-  // }
+  }).catch( console.error )
 }
 
-module.exports = {request}
+module.exports = { request }

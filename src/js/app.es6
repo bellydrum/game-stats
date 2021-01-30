@@ -16,7 +16,7 @@
  */
 
 import {request} from './utils/RequestUtil.es6'
-import {renderCharts} from './charts.es6'
+import * as charts from './charts.es6'
 
 (() => {
   document.addEventListener( 'DOMContentLoaded', () => {
@@ -272,9 +272,11 @@ import {renderCharts} from './charts.es6'
        *
        * General tools for app functionality
        */
-      getInitialDataLoad: async () => {
-        console.log('about to make call')
-        return app.req('http://buttcentral.net/games')
+      getGamesData: async () => {
+        return JSON.parse(await app.req('http://buttcentral.net/games'))
+      },
+      getCurrentGameData: async () => {
+        return JSON.parse(await app.req('http://buttcentral.net/latest_activity'))
       },
 
       /**
@@ -289,20 +291,29 @@ import {renderCharts} from './charts.es6'
          *
          * All functions executed below are defined in the INIT FUNCTIONS section.
          */
-        console.log('started app')
         app.cookie = app.createCookieWrapper()
         app.activateLinks()
         app.activateListeners()
-        console.log('about to get data')
-        const games = await app.getInitialDataLoad()
-        console.log('got data:')
-        console.log(games)
-        renderCharts(games)
+        await app.start()
+
       },
+
+      /**
+       * PAGE LOAD
+       *
+       * Behavior for the initial page load.
+       */
+      start: async () => {
+
+        // get current games data
+        const games = await app.getGamesData()
+        const currentGameData = await app.getCurrentGameData()
+        charts.renderMostPlayedGames(games)
+      }
     }
 
     // Application entry point.
-    app.activate()
+    app.activate().catch( console.error )
 
   })
 })()
