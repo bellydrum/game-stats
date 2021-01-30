@@ -13,19 +13,25 @@
  * @about - standardized wrapper for requests
  */
 async function request(requestType, url, data=null) {
-  const xhr = new XMLHttpRequest();
-  if (requestType.toLowerCase() === 'get') {
-    // perform a get request
-    xhr.onreadystatechange = function() {
-      if (this.readyState === 4 && this.status === 200) {
-        console.log("Here's the response")
-        console.log(xhr.responseText)
+
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest()
+    if (requestType.toUpperCase() === 'GET') {
+      xhr.onreadystatechange = function() {
+        if (this.status === 200) {
+          resolve(xhr.responseText)
+        } else {
+          reject({
+            status: this.status,
+            statusText: xhr.statusText
+          })
+        }
       }
+      // xhr.open(requestType, url + '/?t=' + Math.random(), true);
+      xhr.open(requestType, url, true)
+      xhr.send()
     }
-    // xhr.open(requestType, url + '/?t=' + Math.random(), true);
-    xhr.open(requestType, url, true);
-    xhr.send();
-  }
+  })
 
   // axios.get('https://api.github.com/users/mapbox')
   //   .then(response => {

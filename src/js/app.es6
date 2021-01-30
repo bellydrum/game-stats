@@ -16,6 +16,7 @@
  */
 
 import {request} from './utils/RequestUtil.es6'
+import {renderCharts} from './charts.es6'
 
 (() => {
   document.addEventListener( 'DOMContentLoaded', () => {
@@ -267,6 +268,15 @@ import {request} from './utils/RequestUtil.es6'
       },
 
       /**
+       * UTILITIES
+       *
+       * General tools for app functionality
+       */
+      getInitialDataLoad: async () => {
+        return await app.req('http://buttcentral.net/games', 'get')
+      },
+
+      /**
        * ENTRY POINT
        *
        * The first and only function to be executed on page load.
@@ -281,6 +291,9 @@ import {request} from './utils/RequestUtil.es6'
         app.cookie = app.createCookieWrapper()
         app.activateLinks()
         app.activateListeners()
+        const games = app.getInitialDataLoad()
+        console.log(games)
+        renderCharts(games)
       },
     }
 

@@ -753,22 +753,12 @@ try {
 
 var _RequestUtil = require("./utils/RequestUtil.es6");
 
-/**
- * An all-purpose Javascript object for general and specific application functionality.
- *
- * The app object is intended to be defined only once and stored in the browser cache.
- *
- * @note        Documented using a variant of JSDoc standards.
- * @see         https://devdocs.io/jsdoc/
- * @see         https://devhints.io/jsdoc
- *
- * @version     1.1.0
- * @description Added getCookieWrapper method to INIT FUNCTIONS.
- *
- * @link        https://gist.github.com/bellydrum/b8d482c63f81615aa22a51904bd3d420
- * @author      David Maness  <maness.david.a@gmail.com>
- * @since       x.x.x
- */
+var _charts = require("./charts.es6");
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 (function () {
   document.addEventListener('DOMContentLoaded', function () {
     var app = {
@@ -1010,6 +1000,38 @@ var _RequestUtil = require("./utils/RequestUtil.es6");
       },
 
       /**
+       * UTILITIES
+       *
+       * General tools for app functionality
+       */
+      getInitialDataLoad: function () {
+        var _getInitialDataLoad = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+          return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  _context.next = 2;
+                  return app.req('http://buttcentral.net/games', 'get');
+
+                case 2:
+                  return _context.abrupt("return", _context.sent);
+
+                case 3:
+                case "end":
+                  return _context.stop();
+              }
+            }
+          }, _callee);
+        }));
+
+        function getInitialDataLoad() {
+          return _getInitialDataLoad.apply(this, arguments);
+        }
+
+        return getInitialDataLoad;
+      }(),
+
+      /**
        * ENTRY POINT
        *
        * The first and only function to be executed on page load.
@@ -1023,6 +1045,9 @@ var _RequestUtil = require("./utils/RequestUtil.es6");
         app.cookie = app.createCookieWrapper();
         app.activateLinks();
         app.activateListeners();
+        var games = app.getInitialDataLoad();
+        console.log(games);
+        (0, _charts.renderCharts)(games);
       }
     }; // Application entry point.
 
@@ -1030,12 +1055,36 @@ var _RequestUtil = require("./utils/RequestUtil.es6");
   });
 })();
 
-},{"./utils/RequestUtil.es6":5}],3:[function(require,module,exports){
+},{"./charts.es6":3,"./utils/RequestUtil.es6":6}],3:[function(require,module,exports){
 "use strict";
 
+function renderCharts(games) {
+  var options = {
+    chart: {
+      type: 'line'
+    },
+    series: [{
+      name: 'sales',
+      data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
+    }],
+    xaxis: {
+      categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
+    }
+  };
+  var chart = new ApexCharts(document.querySelector(".gameplayTimeChart"), options);
+  chart.render();
+}
+
+module.exports = {
+  renderCharts: renderCharts
+};
+
 },{}],4:[function(require,module,exports){
-arguments[4][3][0].apply(exports,arguments)
-},{"dup":3}],5:[function(require,module,exports){
+"use strict";
+
+},{}],5:[function(require,module,exports){
+arguments[4][4][0].apply(exports,arguments)
+},{"dup":4}],6:[function(require,module,exports){
 "use strict";
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -1063,45 +1112,34 @@ function request(_x, _x2) {
 function _request() {
   _request = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(requestType, url) {
     var data,
-        xhr,
         _args = arguments;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             data = _args.length > 2 && _args[2] !== undefined ? _args[2] : null;
-            xhr = new XMLHttpRequest();
+            return _context.abrupt("return", new Promise(function (resolve, reject) {
+              var xhr = new XMLHttpRequest();
 
-            if (requestType.toLowerCase() === 'get') {
-              // perform a get request
-              xhr.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) {
-                  console.log("Here's the response");
-                  console.log(xhr.responseText);
-                }
-              }; // xhr.open(requestType, url + '/?t=' + Math.random(), true);
-
-
-              xhr.open(requestType, url, true);
-              xhr.send();
-            } // axios.get('https://api.github.com/users/mapbox')
-            //   .then(response => {
-            //     console.log(response.data.created_at);
-            //   });
-            // try {
-            //   return await $.ajax({
-            //     url: url,
-            //     type: requestType,
-            //     data: data,
-            //     success: result => { return result },
-            //     error: error => { return error }
-            //   })
-            // } catch(error) {
-            //   throw error
-            // }
+              if (requestType.toUpperCase() === 'GET') {
+                xhr.onreadystatechange = function () {
+                  resolve(xhr.responseText); // if (this.readyState === 4 && this.status === 200) {
+                  //   resolve(xhr.responseText)
+                  // } else {
+                  //   reject({
+                  //     status: this.status,
+                  //     statusText: xhr.statusText
+                  //   })
+                  // }
+                }; // xhr.open(requestType, url + '/?t=' + Math.random(), true);
 
 
-          case 3:
+                xhr.open(requestType, url, true);
+                xhr.send();
+              }
+            }));
+
+          case 2:
           case "end":
             return _context.stop();
         }
@@ -1115,10 +1153,10 @@ module.exports = {
   request: request
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 require("regenerator-runtime/runtime");
 
-},{"regenerator-runtime/runtime":1}]},{},[2,3,4,5,6])(6)
+},{"regenerator-runtime/runtime":1}]},{},[2,4,5,6,7])(7)
 });
