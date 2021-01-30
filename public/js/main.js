@@ -757,6 +757,8 @@ var _RequestUtil = require("./utils/RequestUtil.es6");
 
 var charts = _interopRequireWildcard(require("./charts.es6"));
 
+var panels = _interopRequireWildcard(require("./panels.es6"));
+
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -1126,9 +1128,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 case 5:
                   currentGameData = _context4.sent;
-                  charts.renderMostPlayedGames(games);
+                  panels.renderHeader(currentGameData);
+                  charts.renderCharts(games);
 
-                case 7:
+                case 8:
                 case "end":
                   return _context4.stop();
               }
@@ -1148,15 +1151,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   });
 })();
 
-},{"./charts.es6":3,"./utils/RequestUtil.es6":6}],3:[function(require,module,exports){
+},{"./charts.es6":3,"./panels.es6":5,"./utils/RequestUtil.es6":9}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.renderMostPlayedGames = renderMostPlayedGames;
+exports.renderCharts = renderCharts;
+exports.renderHeader = renderHeader;
 
-function renderMostPlayedGames(games) {
+var _DateTimeUtil = require("./utils/DateTimeUtil.es6");
+
+var _constants = require("./constants.es6");
+
+function renderCharts(games) {
   var gameTitlesSortedByTimePlayed = Object.entries(games).map(function (game) {
     return [game[1].name, game[1].play_time_seconds];
   }).sort(function (a, b) {
@@ -1165,13 +1173,18 @@ function renderMostPlayedGames(games) {
   var tenMostPlayedGames = gameTitlesSortedByTimePlayed.slice(0, 10).map(function (name) {
     return games[name[0]];
   });
-  tenMostPlayedGames.forEach(function (game) {
-    return console.log(game);
-  });
+  renderMostPlayedGamesBar(tenMostPlayedGames); // renderMostPlayedGamesTreeMap(tenMostPlayedGames)
+
+  renderPastGameTime(tenMostPlayedGames);
+}
+
+function renderHeader(currentGame) {}
+
+function renderMostPlayedGamesBar(tenMostPlayedGames) {
   var options = {
     series: [{
       data: tenMostPlayedGames.map(function (game) {
-        return game.play_time_seconds;
+        return game.play_time_seconds / 60;
       })
     }],
     chart: {
@@ -1188,15 +1201,15 @@ function renderMostPlayedGames(games) {
         }
       }
     },
-    colors: ['#33b2df', '#546E7A', '#d4526e', '#13d8aa', '#A5978B', '#2b908f', '#f9a3a4', '#90ee7e', '#f48024', '#69d2e7'],
+    colors: _constants.COLORS,
     dataLabels: {
       enabled: true,
       textAnchor: 'start',
       style: {
-        colors: ['#444']
+        colors: _constants.DATA_LABELS_COLORS
       },
       formatter: function formatter(val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val;
+        return opt.w.globals.labels[opt.dataPointIndex];
       },
       offsetX: 0,
       dropShadow: {
@@ -1209,7 +1222,7 @@ function renderMostPlayedGames(games) {
     },
     xaxis: {
       categories: tenMostPlayedGames.map(function (game) {
-        return game.name;
+        return "".concat(game.name, " (").concat(game.system.toUpperCase(), ")");
       })
     },
     yaxis: {
@@ -1218,7 +1231,7 @@ function renderMostPlayedGames(games) {
       }
     },
     title: {
-      text: 'Top ten most-played games',
+      text: 'Highest playtime',
       align: 'center',
       floating: true
     },
@@ -1236,16 +1249,161 @@ function renderMostPlayedGames(games) {
       }
     }
   };
-  var chart = new ApexCharts(document.querySelector("#gameplayTimeChart"), options);
-  chart.render();
+  var ptions = {
+    series: [{
+      data: tenMostPlayedGames.map(function (game) {
+        return game.play_time_seconds / 60;
+      })
+    }],
+    chart: {
+      type: 'bar',
+      height: 380,
+      animations: _constants.ANIMATIONS
+    },
+    plotOptions: {
+      bar: {
+        barHeight: '100%',
+        distributed: true,
+        horizontal: true,
+        dataLabels: {
+          position: 'bottom'
+        }
+      }
+    },
+    colors: _constants.COLORS,
+    dataLabels: {
+      enabled: true,
+      textAnchor: 'start',
+      style: {
+        colors: _constants.DATA_LABELS_COLORS
+      },
+      formatter: function formatter(val, opt) {
+        return opt.w.globals.labels[opt.dataPointIndex];
+      },
+      offsetX: 0,
+      background: {
+        enabled: false,
+        opacity: 0
+      },
+      dropShadow: {
+        enabled: false
+      },
+      fontWeight: 300
+    },
+    stroke: {
+      show: false,
+      width: 0.5,
+      colors: ['#bbb']
+    },
+    xaxis: {
+      categories: tenMostPlayedGames.map(function (game) {
+        return "".concat(game.name, " (").concat(game.system.toUpperCase(), ")");
+      })
+    },
+    yaxis: {
+      labels: {
+        show: false
+      }
+    },
+    title: {
+      text: 'Top ten most-played games',
+      align: 'center',
+      floating: true
+    },
+    tooltip: {
+      theme: 'dark',
+      x: {
+        show: true
+      },
+      y: {
+        title: {
+          formatter: function formatter() {
+            return '';
+          }
+        }
+      }
+    }
+  };
+  new ApexCharts(document.querySelector("#gameplayTimeChart"), options).render();
 }
 
-},{}],4:[function(require,module,exports){
+function renderMostPlayedGamesTreeMap(tenMostPlayedGames) {
+  var options = {
+    chart: {
+      height: 350,
+      type: "treemap"
+    },
+    series: [{
+      data: Object.entries(tenMostPlayedGames).map(function (game) {
+        return {
+          x: game[1].name,
+          y: game[1].play_time_seconds
+        };
+      })
+    }]
+  };
+  new ApexCharts(document.querySelector("#gameplayTimeChart"), options).render();
+}
+
+function renderPastGameTime(games) {}
+
+},{"./constants.es6":4,"./utils/DateTimeUtil.es6":7}],4:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DATA_LABELS_COLORS = exports.COLORS = exports.ANIMATIONS = void 0;
+var ANIMATIONS = {
+  easing: 'easeout',
+  speed: 400,
+  animateGradually: {
+    enabled: false,
+    delay: 500
+  }
+};
+exports.ANIMATIONS = ANIMATIONS;
+var COLORS = ['#bde6f5', '#d2dbe0', '#f0c2cc', '#b9f9ea', '#ded8d4', '#c4eded', '#fccfd0', '#d8f9d2', '#fce3cf', '#d3f2f8'];
+exports.COLORS = COLORS;
+var DATA_LABELS_COLORS = ['#555'];
+exports.DATA_LABELS_COLORS = DATA_LABELS_COLORS;
+
 },{}],5:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.renderHeader = renderHeader;
+
+function renderHeader(currentGameData) {
+  return currentGameData;
+}
+
+},{}],6:[function(require,module,exports){
+"use strict";
+
+},{}],7:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.hourMinuteFormat = hourMinuteFormat;
+
+function hourMinuteFormat(minutes) {
+  /**
+   * @param minutes <number>
+   * @return 1 hr, 39 min
+   * @type {string}
+   */
+  var formatted = new Date(minutes * 60 * 1000).toISOString();
+  return "".concat(parseInt(formatted.substr(11, 2)), " hr, ").concat(parseInt(formatted.substr(14, 2)), " min");
+}
+
+},{}],8:[function(require,module,exports){
+arguments[4][6][0].apply(exports,arguments)
+},{"dup":6}],9:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1287,10 +1445,10 @@ module.exports = {
   request: request
 };
 
-},{}],7:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 require("regenerator-runtime/runtime");
 
-},{"regenerator-runtime/runtime":1}]},{},[2,4,5,6,7])(7)
+},{"regenerator-runtime/runtime":1}]},{},[2,6,7,8,9,10])(10)
 });

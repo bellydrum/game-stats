@@ -17,6 +17,7 @@
 
 import {request} from './utils/RequestUtil.es6'
 import * as charts from './charts.es6'
+import * as panels from './panels.es6'
 
 (() => {
   document.addEventListener( 'DOMContentLoaded', () => {
@@ -308,7 +309,8 @@ import * as charts from './charts.es6'
         // get current games data
         const games = await app.getGamesData()
         const currentGameData = await app.getCurrentGameData()
-        charts.renderMostPlayedGames(games)
+        panels.renderHeader(currentGameData)
+        charts.renderCharts(games)
       }
     }
 

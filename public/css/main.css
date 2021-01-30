@@ -26,6 +26,7 @@ html {
 }
 
 .container {
+    border: 1px dotted red;
     margin: 0 auto;
     min-height: 100vh;
     width: 80%;
