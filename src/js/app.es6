@@ -273,7 +273,8 @@ import {renderCharts} from './charts.es6'
        * General tools for app functionality
        */
       getInitialDataLoad: async () => {
-        return await app.req('http://buttcentral.net/games', 'get')
+        console.log('about to make call')
+        return app.req('http://buttcentral.net/games')
       },
 
       /**
@@ -282,16 +283,19 @@ import {renderCharts} from './charts.es6'
        * The first and only function to be executed on page load.
        */
 
-      activate: () => {
+      activate: async () => {
         /**
          * Executes the following block in order to "activate" the application on page load.
          *
          * All functions executed below are defined in the INIT FUNCTIONS section.
          */
+        console.log('started app')
         app.cookie = app.createCookieWrapper()
         app.activateLinks()
         app.activateListeners()
-        const games = app.getInitialDataLoad()
+        console.log('about to get data')
+        const games = await app.getInitialDataLoad()
+        console.log('got data:')
         console.log(games)
         renderCharts(games)
       },

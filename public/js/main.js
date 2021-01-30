@@ -1010,13 +1010,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  _context.next = 2;
-                  return app.req('http://buttcentral.net/games', 'get');
+                  console.log('about to make call');
+                  return _context.abrupt("return", app.req('http://buttcentral.net/games'));
 
                 case 2:
-                  return _context.abrupt("return", _context.sent);
-
-                case 3:
                 case "end":
                   return _context.stop();
               }
@@ -1036,19 +1033,46 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
        *
        * The first and only function to be executed on page load.
        */
-      activate: function activate() {
-        /**
-         * Executes the following block in order to "activate" the application on page load.
-         *
-         * All functions executed below are defined in the INIT FUNCTIONS section.
-         */
-        app.cookie = app.createCookieWrapper();
-        app.activateLinks();
-        app.activateListeners();
-        var games = app.getInitialDataLoad();
-        console.log(games);
-        (0, _charts.renderCharts)(games);
-      }
+      activate: function () {
+        var _activate = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+          var games;
+          return regeneratorRuntime.wrap(function _callee2$(_context2) {
+            while (1) {
+              switch (_context2.prev = _context2.next) {
+                case 0:
+                  /**
+                   * Executes the following block in order to "activate" the application on page load.
+                   *
+                   * All functions executed below are defined in the INIT FUNCTIONS section.
+                   */
+                  console.log('started app');
+                  app.cookie = app.createCookieWrapper();
+                  app.activateLinks();
+                  app.activateListeners();
+                  console.log('about to get data');
+                  _context2.next = 7;
+                  return app.getInitialDataLoad();
+
+                case 7:
+                  games = _context2.sent;
+                  console.log('got data:');
+                  console.log(games);
+                  (0, _charts.renderCharts)(games);
+
+                case 11:
+                case "end":
+                  return _context2.stop();
+              }
+            }
+          }, _callee2);
+        }));
+
+        function activate() {
+          return _activate.apply(this, arguments);
+        }
+
+        return activate;
+      }()
     }; // Application entry point.
 
     app.activate();
@@ -1071,7 +1095,7 @@ function renderCharts(games) {
       categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
     }
   };
-  var chart = new ApexCharts(document.querySelector(".gameplayTimeChart"), options);
+  var chart = new ApexCharts(document.querySelector("#gameplayTimeChart"), options);
   chart.render();
 }
 
@@ -1087,17 +1111,15 @@ arguments[4][4][0].apply(exports,arguments)
 },{"dup":4}],6:[function(require,module,exports){
 "use strict";
 
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 /**
  * RequestUtil.js
  * written by bellydrum to make requests even simpler
  * ------------------------------------------------------------------------------
- * @param requestType   <string> - type of request
- * @param url           <string> - url from which to request data
- * @param data          <object> - OPTIONAL: data required to make request
+ * @param url           <string>  - url from which to request data
+ * @param method        <string>  - OPTIONAL: type of request
+ * @param data          <object>  - OPTIONAL: data required to make request
+ * @param responseType  <string>  - OPTIONAL: expected response type
+ * @param async         <boolean> - OPTIONAL: whether or not to await this call
  * @returns
  *  - success: {Promise<*>}
  *  - failure: error
@@ -1105,48 +1127,39 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  *
  * @about - standardized wrapper for requests
  */
-function request(_x, _x2) {
-  return _request.apply(this, arguments);
-}
+function request(url) {
+  var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'GET';
+  var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var responseType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'text';
+  var async = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
+  console.log("url: ".concat(url));
+  console.log("method: ".concat(method));
+  return new Promise(function (resolve, reject) {
+    var xhttp = new XMLHttpRequest();
 
-function _request() {
-  _request = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(requestType, url) {
-    var data,
-        _args = arguments;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            data = _args.length > 2 && _args[2] !== undefined ? _args[2] : null;
-            return _context.abrupt("return", new Promise(function (resolve, reject) {
-              var xhr = new XMLHttpRequest();
-
-              if (requestType.toUpperCase() === 'GET') {
-                xhr.onreadystatechange = function () {
-                  resolve(xhr.responseText); // if (this.readyState === 4 && this.status === 200) {
-                  //   resolve(xhr.responseText)
-                  // } else {
-                  //   reject({
-                  //     status: this.status,
-                  //     statusText: xhr.statusText
-                  //   })
-                  // }
-                }; // xhr.open(requestType, url + '/?t=' + Math.random(), true);
-
-
-                xhr.open(requestType, url, true);
-                xhr.send();
-              }
-            }));
-
-          case 2:
-          case "end":
-            return _context.stop();
-        }
+    xhttp.onreadystatechange = function () {
+      if (this.readyState === 4 && this.status === 200) {
+        resolve(xhttp.responseText);
       }
-    }, _callee);
-  }));
-  return _request.apply(this, arguments);
+    };
+
+    xhttp.open(method, url, async);
+    xhttp.send();
+  }); // axios.get('https://api.github.com/users/mapbox')
+  //   .then(response => {
+  //     console.log(response.data.created_at);
+  //   });
+  // try {
+  //   return await $.ajax({
+  //     url: url,
+  //     type: requestType,
+  //     data: data,
+  //     success: result => { return result },
+  //     error: error => { return error }
+  //   })
+  // } catch(error) {
+  //   throw error
+  // }
 }
 
 module.exports = {

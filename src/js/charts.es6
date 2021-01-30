@@ -12,7 +12,7 @@ function renderCharts(games) {
     }
   }
 
-  var chart = new ApexCharts(document.querySelector(".gameplayTimeChart"), options);
+  var chart = new ApexCharts(document.querySelector("#gameplayTimeChart"), options);
 
   chart.render();
 }
