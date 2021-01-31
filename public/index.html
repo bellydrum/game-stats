@@ -8,10 +8,41 @@
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <script src="/js/main.js"></script>
         <link rel="shortcut icon" href="#" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
+        <link rel="stylesheet" type="text/css" href="/css/content.css" />
         <title>Game stats</title>
     </head>
     <body>
-            <div id="gameplayTimeChart"></div>
+        <div class="section-panel info-panel">
+            <div class="container">
+                <div class="columns is-vcentered is-mobile">
+                    <div class="column is-two-thirds-mobile is-offset-2-mobile is-half-tablet is-offset-one-quarter-tablet is-one-third-desktop is-offset-one-third-desktop title-column">
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-content has-text-centered">
+                                        <p class="title is-4">RetroPie Stats</p>
+                                        <p class="subtitle is-6">
+                                            <a href="https://twitter.com/b3llydrum">@b3llydrum</a>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="content header-card-info has-text-centered">
+                                    <div id="currently-playing-info"></div>
+                                    <div id="last-played-info"></div>
+                                    <br>
+                                    <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-panel chart-panel">
+
+        </div>
     </body>
 </html>

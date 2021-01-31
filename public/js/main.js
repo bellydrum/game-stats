@@ -1113,25 +1113,29 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
        */
       start: function () {
         var _start = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-          var games, currentGameData;
           return regeneratorRuntime.wrap(function _callee4$(_context4) {
             while (1) {
               switch (_context4.prev = _context4.next) {
                 case 0:
-                  _context4.next = 2;
-                  return app.getGamesData();
-
-                case 2:
-                  games = _context4.sent;
-                  _context4.next = 5;
+                  _context4.t0 = panels;
+                  _context4.next = 3;
                   return app.getCurrentGameData();
 
-                case 5:
-                  currentGameData = _context4.sent;
-                  panels.renderHeader(currentGameData);
-                  charts.renderCharts(games);
+                case 3:
+                  _context4.t1 = _context4.sent;
+
+                  _context4.t0.renderHeader.call(_context4.t0, _context4.t1);
+
+                  _context4.t2 = charts;
+                  _context4.next = 8;
+                  return app.getGamesData();
 
                 case 8:
+                  _context4.t3 = _context4.sent;
+
+                  _context4.t2.renderCharts.call(_context4.t2, _context4.t3);
+
+                case 10:
                 case "end":
                   return _context4.stop();
               }
@@ -1158,7 +1162,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.renderCharts = renderCharts;
-exports.renderHeader = renderHeader;
 
 var _DateTimeUtil = require("./utils/DateTimeUtil.es6");
 
@@ -1172,180 +1175,11 @@ function renderCharts(games) {
   });
   var tenMostPlayedGames = gameTitlesSortedByTimePlayed.slice(0, 10).map(function (name) {
     return games[name[0]];
-  });
-  renderMostPlayedGamesBar(tenMostPlayedGames); // renderMostPlayedGamesTreeMap(tenMostPlayedGames)
-
-  renderPastGameTime(tenMostPlayedGames);
+  }); //
+  // renderMostPlayedGamesBar(tenMostPlayedGames)
+  // // renderMostPlayedGamesTreeMap(tenMostPlayedGames)
+  // renderPastGameTime(tenMostPlayedGames)
 }
-
-function renderHeader(currentGame) {}
-
-function renderMostPlayedGamesBar(tenMostPlayedGames) {
-  var options = {
-    series: [{
-      data: tenMostPlayedGames.map(function (game) {
-        return game.play_time_seconds / 60;
-      })
-    }],
-    chart: {
-      type: 'bar',
-      height: 380
-    },
-    plotOptions: {
-      bar: {
-        barHeight: '100%',
-        distributed: true,
-        horizontal: true,
-        dataLabels: {
-          position: 'bottom'
-        }
-      }
-    },
-    colors: _constants.COLORS,
-    dataLabels: {
-      enabled: true,
-      textAnchor: 'start',
-      style: {
-        colors: _constants.DATA_LABELS_COLORS
-      },
-      formatter: function formatter(val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex];
-      },
-      offsetX: 0,
-      dropShadow: {
-        enabled: false
-      }
-    },
-    stroke: {
-      width: 1,
-      colors: ['#fff']
-    },
-    xaxis: {
-      categories: tenMostPlayedGames.map(function (game) {
-        return "".concat(game.name, " (").concat(game.system.toUpperCase(), ")");
-      })
-    },
-    yaxis: {
-      labels: {
-        show: false
-      }
-    },
-    title: {
-      text: 'Highest playtime',
-      align: 'center',
-      floating: true
-    },
-    tooltip: {
-      theme: 'dark',
-      x: {
-        show: false
-      },
-      y: {
-        title: {
-          formatter: function formatter() {
-            return '';
-          }
-        }
-      }
-    }
-  };
-  var ptions = {
-    series: [{
-      data: tenMostPlayedGames.map(function (game) {
-        return game.play_time_seconds / 60;
-      })
-    }],
-    chart: {
-      type: 'bar',
-      height: 380,
-      animations: _constants.ANIMATIONS
-    },
-    plotOptions: {
-      bar: {
-        barHeight: '100%',
-        distributed: true,
-        horizontal: true,
-        dataLabels: {
-          position: 'bottom'
-        }
-      }
-    },
-    colors: _constants.COLORS,
-    dataLabels: {
-      enabled: true,
-      textAnchor: 'start',
-      style: {
-        colors: _constants.DATA_LABELS_COLORS
-      },
-      formatter: function formatter(val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex];
-      },
-      offsetX: 0,
-      background: {
-        enabled: false,
-        opacity: 0
-      },
-      dropShadow: {
-        enabled: false
-      },
-      fontWeight: 300
-    },
-    stroke: {
-      show: false,
-      width: 0.5,
-      colors: ['#bbb']
-    },
-    xaxis: {
-      categories: tenMostPlayedGames.map(function (game) {
-        return "".concat(game.name, " (").concat(game.system.toUpperCase(), ")");
-      })
-    },
-    yaxis: {
-      labels: {
-        show: false
-      }
-    },
-    title: {
-      text: 'Top ten most-played games',
-      align: 'center',
-      floating: true
-    },
-    tooltip: {
-      theme: 'dark',
-      x: {
-        show: true
-      },
-      y: {
-        title: {
-          formatter: function formatter() {
-            return '';
-          }
-        }
-      }
-    }
-  };
-  new ApexCharts(document.querySelector("#gameplayTimeChart"), options).render();
-}
-
-function renderMostPlayedGamesTreeMap(tenMostPlayedGames) {
-  var options = {
-    chart: {
-      height: 350,
-      type: "treemap"
-    },
-    series: [{
-      data: Object.entries(tenMostPlayedGames).map(function (game) {
-        return {
-          x: game[1].name,
-          y: game[1].play_time_seconds
-        };
-      })
-    }]
-  };
-  new ApexCharts(document.querySelector("#gameplayTimeChart"), options).render();
-}
-
-function renderPastGameTime(games) {}
 
 },{"./constants.es6":4,"./utils/DateTimeUtil.es6":7}],4:[function(require,module,exports){
 "use strict";
@@ -1377,7 +1211,42 @@ Object.defineProperty(exports, "__esModule", {
 exports.renderHeader = renderHeader;
 
 function renderHeader(currentGameData) {
-  return currentGameData;
+  var currentGame = currentGameData.current_game;
+  var lastGame = currentGameData.previous_game;
+  var currentGameLabelText = 'Currently playing:';
+  var notActiveLabelText = 'The pi is currently off.';
+  var lastGameLabelText = 'Previous game';
+  var infoLabelSize = 'is-size-5';
+  var currentGameSectionId = 'currently-playing-info';
+  var lastPlayedGameSectionId = 'last-played-info';
+  var currentlyPlaying = document.getElementById(currentGameSectionId);
+  var lastPlayed = document.getElementById(lastPlayedGameSectionId);
+
+  if (Object.keys(currentGame).length !== 0) {
+    var currentGameLabel = document.createElement('div');
+    currentGameLabel.appendChild(document.createTextNode(currentGameLabelText));
+    currentlyPlaying.append(currentGameLabel);
+    var currentGameTitle = document.createElement('div');
+    currentGameTitle.className = infoLabelSize;
+    currentGameTitle.appendChild(document.createTextNode(currentGame.name));
+    currentGameTitle.style.fontStyle = 'italic';
+    currentlyPlaying.append(currentGameTitle);
+  } else {
+    var _currentGameLabel = document.createElement('div');
+
+    _currentGameLabel.appendChild(document.createTextNode(notActiveLabelText));
+
+    currentlyPlaying.append(_currentGameLabel);
+  }
+
+  var lastGameLabel = document.createElement('div');
+  lastGameLabel.append(document.createTextNode(lastGameLabelText));
+  lastPlayed.append(lastGameLabel);
+  var lastGameTitle = document.createElement('div');
+  lastGameTitle.className = infoLabelSize;
+  lastGameTitle.appendChild(document.createTextNode("".concat(lastGame.name, " (").concat(lastGame.system.toUpperCase(), ")")));
+  lastGameTitle.style.fontStyle = 'italic';
+  lastPlayed.append(lastGameTitle);
 }
 
 },{}],6:[function(require,module,exports){

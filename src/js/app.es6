@@ -307,10 +307,8 @@ import * as panels from './panels.es6'
       start: async () => {
 
         // get current games data
-        const games = await app.getGamesData()
-        const currentGameData = await app.getCurrentGameData()
-        panels.renderHeader(currentGameData)
-        charts.renderCharts(games)
+        panels.renderHeader(await app.getCurrentGameData())
+        charts.renderCharts(await app.getGamesData())
       }
     }
 

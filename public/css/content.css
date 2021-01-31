@@ -1,3 +1,32 @@
-#gameplayTimeChart {
+
+
+/* every panel on the page */
+.section-panel {
     width: 100%;
+    height: 80vh;                                           /* hardcoded height */
+    filter: drop-shadow(5px 0px 16px rgb(26, 26, 26));      /* cast shadow on upper section */
+    display: flex;
+    /*align-items: center;*/
+    /*justify-content: center;*/
+    /*text-align: center;*/
+    /*border: 1px dotted red;*/
+}
+/* panels with no charts */
+.section-panel.info-panel {
+    background: rgb(144,144,144);
+    background: linear-gradient(90deg, rgba(144,144,144,1) 0%, rgba(78,78,94,1) 100%);
+}
+.info-column {
+    border: 1px dotted red;
+}
+
+.header-card-info > div {
+    margin-bottom: 20px;
+}
+
+
+/* panels with charts */
+.section-panel.chart-panel {
+    background: rgb(235,235,235);
+    background: linear-gradient(90deg, rgba(235,235,235,1) 0%, rgba(198,198,255,1) 100%);
 }
