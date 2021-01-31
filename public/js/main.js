@@ -1285,8 +1285,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
         show: false
       },
       type: 'bar',
-      height: 350,
-      width: '70%'
+      height: 350
     },
     grid: {
       show: false,

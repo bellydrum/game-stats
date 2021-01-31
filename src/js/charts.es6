@@ -30,8 +30,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
         show: false,
       },
       type: 'bar',
-      height: 350,
-      width: '70%',
+      height: 350
     },
     grid: {
       show: false,
