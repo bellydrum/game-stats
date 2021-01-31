@@ -37,8 +37,9 @@ export function renderHeaderCard(currentGameData) {
     currentGameTitle.style.fontStyle = 'italic'
     currentlyPlaying.append(currentGameTitle)
 
-    document.getElementById('current-game-image').classList.remove('is-hidden')
-    document.getElementById('last-updated-time').innerText = `Last updated ${getTimeFromStoredDate(currentGame.time_started)}`
+    // uncomment the next line to test game cover images
+    // document.getElementById('current-game-image').classList.remove('is-hidden')
+    document.getElementById('last-updated-time').innerText = `As of ${getTimeFromStoredDate(currentGame.time_started)}`
   } else {
     /** no game is being played **/
 
@@ -48,7 +49,7 @@ export function renderHeaderCard(currentGameData) {
     currentlyPlaying.append(currentGameLabel)
 
     document.getElementById('current-game-image').classList.add('is-hidden')
-    document.getElementById('last-updated-time').innerText = `Last updated ${getTimeFromStoredDate(lastGame.time_ended)}`
+    document.getElementById('last-updated-time').innerText = `As of ${getTimeFromStoredDate(lastGame.time_ended)}`
   }
 
   const lastGameLabel = document.createElement('div')

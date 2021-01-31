@@ -308,7 +308,7 @@ import * as components from './components.es6'
 
         // get current games data
         charts.renderCharts(await app.getGamesData())
-        // components.renderHeaderCard(await app.getCurrentGameData())
+        components.renderHeaderCard(await app.getCurrentGameData())
         let renderHeaderCardInterval = setInterval(async function() {
           components.renderHeaderCard(await app.getCurrentGameData())
         }, 500);

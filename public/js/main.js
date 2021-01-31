@@ -1127,7 +1127,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                   _context5.t0.renderCharts.call(_context5.t0, _context5.t1);
 
-                  // components.renderHeaderCard(await app.getCurrentGameData())
+                  _context5.t2 = components;
+                  _context5.next = 8;
+                  return app.getCurrentGameData();
+
+                case 8:
+                  _context5.t3 = _context5.sent;
+
+                  _context5.t2.renderHeaderCard.call(_context5.t2, _context5.t3);
+
                   renderHeaderCardInterval = setInterval( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
                     return regeneratorRuntime.wrap(function _callee4$(_context4) {
                       while (1) {
@@ -1150,7 +1158,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     }, _callee4);
                   })), 500);
 
-                case 6:
+                case 11:
                 case "end":
                   return _context5.stop();
               }
@@ -1235,9 +1243,10 @@ function renderHeaderCard(currentGameData) {
     currentGameTitle.className = slightlyLarger;
     currentGameTitle.appendChild(document.createTextNode("".concat(currentGame.name, " (").concat(currentGame.system.toUpperCase(), ")")));
     currentGameTitle.style.fontStyle = 'italic';
-    currentlyPlaying.append(currentGameTitle);
-    document.getElementById('current-game-image').classList.remove('is-hidden');
-    document.getElementById('last-updated-time').innerText = "Last updated ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(currentGame.time_started));
+    currentlyPlaying.append(currentGameTitle); // uncomment the next line to test game cover images
+    // document.getElementById('current-game-image').classList.remove('is-hidden')
+
+    document.getElementById('last-updated-time').innerText = "As of ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(currentGame.time_started));
   } else {
     /** no game is being played **/
     var _currentGameLabel = document.createElement('div');
@@ -1248,7 +1257,7 @@ function renderHeaderCard(currentGameData) {
 
     currentlyPlaying.append(_currentGameLabel);
     document.getElementById('current-game-image').classList.add('is-hidden');
-    document.getElementById('last-updated-time').innerText = "Last updated ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(lastGame.time_ended));
+    document.getElementById('last-updated-time').innerText = "As of ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(lastGame.time_ended));
   }
 
   var lastGameLabel = document.createElement('div');
