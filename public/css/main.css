@@ -22,12 +22,11 @@ html, body {
     overflow-x: hidden;
 }
 
-
-
 /* bulma overrides */
 .columns {
-    margin-top: 15vh;
+    /*margin-top: 15vh;*/
 }
+
 .column {
     padding: 0;
 }

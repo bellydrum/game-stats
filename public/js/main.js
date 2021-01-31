@@ -757,7 +757,7 @@ var _RequestUtil = require("./utils/RequestUtil.es6");
 
 var charts = _interopRequireWildcard(require("./charts.es6"));
 
-var panels = _interopRequireWildcard(require("./panels.es6"));
+var components = _interopRequireWildcard(require("./components.es6"));
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
@@ -1117,14 +1117,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             while (1) {
               switch (_context4.prev = _context4.next) {
                 case 0:
-                  _context4.t0 = panels;
+                  _context4.t0 = components;
                   _context4.next = 3;
                   return app.getCurrentGameData();
 
                 case 3:
                   _context4.t1 = _context4.sent;
 
-                  _context4.t0.renderHeader.call(_context4.t0, _context4.t1);
+                  _context4.t0.renderHeaderCard.call(_context4.t0, _context4.t1);
 
                   _context4.t2 = charts;
                   _context4.next = 8;
@@ -1155,7 +1155,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   });
 })();
 
-},{"./charts.es6":3,"./panels.es6":5,"./utils/RequestUtil.es6":9}],3:[function(require,module,exports){
+},{"./charts.es6":3,"./components.es6":4,"./utils/RequestUtil.es6":9}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1181,7 +1181,60 @@ function renderCharts(games) {
   // renderPastGameTime(tenMostPlayedGames)
 }
 
-},{"./constants.es6":4,"./utils/DateTimeUtil.es6":7}],4:[function(require,module,exports){
+},{"./constants.es6":5,"./utils/DateTimeUtil.es6":7}],4:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.renderHeaderCard = renderHeaderCard;
+
+function renderHeaderCard(currentGameData) {
+  var currentGame = currentGameData.current_game;
+  var lastGame = currentGameData.previous_game;
+  var currentGameLabelText = 'Currently playing:';
+  var notActiveLabelText = 'The pi is currently off.';
+  var lastGameLabelText = 'Previous game';
+  var currentGameSectionId = 'currently-playing-info';
+  var lastPlayedGameSectionId = 'last-played-info';
+  var slightlyBolder = '';
+  var slightlySmaller = 'is-size-7';
+  var slightlyLarger = 'is-size-6';
+  var currentlyPlaying = document.getElementById(currentGameSectionId);
+  var lastPlayed = document.getElementById(lastPlayedGameSectionId);
+
+  if (Object.keys(currentGame).length !== 0) {
+    var currentGameLabel = document.createElement('div');
+    currentGameLabel.className = "".concat(slightlyBolder, " ").concat(slightlySmaller);
+    currentGameLabel.appendChild(document.createTextNode(currentGameLabelText));
+    currentlyPlaying.append(currentGameLabel);
+    var currentGameTitle = document.createElement('div');
+    currentGameTitle.className = slightlyLarger;
+    currentGameTitle.appendChild(document.createTextNode("".concat(currentGame.name, " (").concat(currentGame.system.toUpperCase(), ")")));
+    currentGameTitle.style.fontStyle = 'italic';
+    currentlyPlaying.append(currentGameTitle);
+  } else {
+    var _currentGameLabel = document.createElement('div');
+
+    _currentGameLabel.className = "".concat(slightlyBolder, " ").concat(slightlySmaller);
+
+    _currentGameLabel.appendChild(document.createTextNode(notActiveLabelText));
+
+    currentlyPlaying.append(_currentGameLabel);
+  }
+
+  var lastGameLabel = document.createElement('div');
+  lastGameLabel.className = "".concat(slightlyBolder, " ").concat(slightlySmaller);
+  lastGameLabel.append(document.createTextNode(lastGameLabelText));
+  lastPlayed.append(lastGameLabel);
+  var lastGameTitle = document.createElement('div');
+  lastGameTitle.className = slightlyLarger;
+  lastGameTitle.appendChild(document.createTextNode("".concat(lastGame.name, " (").concat(lastGame.system.toUpperCase(), ")")));
+  lastGameTitle.style.fontStyle = 'italic';
+  lastPlayed.append(lastGameTitle);
+}
+
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1201,53 +1254,6 @@ var COLORS = ['#bde6f5', '#d2dbe0', '#f0c2cc', '#b9f9ea', '#ded8d4', '#c4eded', 
 exports.COLORS = COLORS;
 var DATA_LABELS_COLORS = ['#555'];
 exports.DATA_LABELS_COLORS = DATA_LABELS_COLORS;
-
-},{}],5:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.renderHeader = renderHeader;
-
-function renderHeader(currentGameData) {
-  var currentGame = currentGameData.current_game;
-  var lastGame = currentGameData.previous_game;
-  var currentGameLabelText = 'Currently playing:';
-  var notActiveLabelText = 'The pi is currently off.';
-  var lastGameLabelText = 'Previous game';
-  var infoLabelSize = 'is-size-5';
-  var currentGameSectionId = 'currently-playing-info';
-  var lastPlayedGameSectionId = 'last-played-info';
-  var currentlyPlaying = document.getElementById(currentGameSectionId);
-  var lastPlayed = document.getElementById(lastPlayedGameSectionId);
-
-  if (Object.keys(currentGame).length !== 0) {
-    var currentGameLabel = document.createElement('div');
-    currentGameLabel.appendChild(document.createTextNode(currentGameLabelText));
-    currentlyPlaying.append(currentGameLabel);
-    var currentGameTitle = document.createElement('div');
-    currentGameTitle.className = infoLabelSize;
-    currentGameTitle.appendChild(document.createTextNode(currentGame.name));
-    currentGameTitle.style.fontStyle = 'italic';
-    currentlyPlaying.append(currentGameTitle);
-  } else {
-    var _currentGameLabel = document.createElement('div');
-
-    _currentGameLabel.appendChild(document.createTextNode(notActiveLabelText));
-
-    currentlyPlaying.append(_currentGameLabel);
-  }
-
-  var lastGameLabel = document.createElement('div');
-  lastGameLabel.append(document.createTextNode(lastGameLabelText));
-  lastPlayed.append(lastGameLabel);
-  var lastGameTitle = document.createElement('div');
-  lastGameTitle.className = infoLabelSize;
-  lastGameTitle.appendChild(document.createTextNode("".concat(lastGame.name, " (").concat(lastGame.system.toUpperCase(), ")")));
-  lastGameTitle.style.fontStyle = 'italic';
-  lastPlayed.append(lastGameTitle);
-}
 
 },{}],6:[function(require,module,exports){
 "use strict";

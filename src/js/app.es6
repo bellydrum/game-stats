@@ -17,7 +17,7 @@
 
 import {request} from './utils/RequestUtil.es6'
 import * as charts from './charts.es6'
-import * as panels from './panels.es6'
+import * as components from './components.es6'
 
 (() => {
   document.addEventListener( 'DOMContentLoaded', () => {
@@ -307,7 +307,7 @@ import * as panels from './panels.es6'
       start: async () => {
 
         // get current games data
-        panels.renderHeader(await app.getCurrentGameData())
+        components.renderHeaderCard(await app.getCurrentGameData())
         charts.renderCharts(await app.getGamesData())
       }
     }
