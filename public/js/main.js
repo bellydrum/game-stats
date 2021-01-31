@@ -1153,22 +1153,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                             app.currentlyActive = Object.keys(currentGameData.current_game).length !== 0; // logging off: update charts
 
-                            if (!(statusFlag && !app.currentlyActive)) {
-                              _context5.next = 12;
-                              break;
-                            }
+                            if (statusFlag && !app.currentlyActive) {
+                              app.currentlyActiveTime = 0;
+                            } // update time active and add it to current game time_played_seconds
 
-                            _context5.t0 = charts;
-                            _context5.next = 10;
-                            return app.getGamesData();
 
-                          case 10:
-                            _context5.t1 = _context5.sent;
-
-                            _context5.t0.renderCharts.call(_context5.t0, _context5.t1);
-
-                          case 12:
-                            // update time active and add it to current game time_played_seconds
                             if (app.currentlyActive) {
                               if (Object.keys(currentGameData.current_game).length !== 0) {
                                 app.currentlyActiveTime = Date.now() - (0, _DateTimeUtil.getDateFromStoredDate)(currentGameData.current_game.time_started);
@@ -1205,7 +1194,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                               })), app.refreshFreq);
                             }
 
-                          case 14:
+                          case 9:
                           case "end":
                             return _context5.stop();
                         }
@@ -1264,6 +1253,7 @@ function renderCharts(games) {
     return games[name[0]];
   });
   renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw);
+  renderGamePlaytimeDivision(tenMostPlayedGames, firstDraw);
 }
 
 function renderGamesWithMostPlaytime(tenMostPlayedGames) {
@@ -1276,6 +1266,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
         return a.play_time_seconds;
       })
     }],
+    colors: ['#9babe9'],
     chart: {
       animations: {
         enabled: firstDraw,
@@ -1302,17 +1293,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
           position: 'left',
           textAnchor: 'start'
         }
-      },
-      dataLabels: {
-        enabled: true,
-        style: {
-          colors: ['#333']
-        },
-        offsetX: 0
       }
-    },
-    dataLabels: {
-      enabled: false
     },
     xaxis: {
       categories: tenMostPlayedGames.map(function (a) {
@@ -1321,12 +1302,25 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
       labels: {
         formatter: function formatter(a) {
           return "".concat(parseInt(a / 60), " min");
+        },
+        style: {
+          colors: ['#bbb']
         }
       }
     },
     yaxis: {
       labels: {
-        maxWidth: 300
+        maxWidth: 300,
+        style: {
+          colors: '#bbb'
+        }
+      }
+    },
+    dataLabels: {
+      enabled: false,
+      offsetX: 20,
+      style: {
+        colors: ['#333']
       }
     },
     responsive: [{
@@ -1337,7 +1331,10 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
         // },
         yaxis: {
           labels: {
-            maxWidth: 160
+            maxWidth: 160,
+            style: {
+              colors: '#bbb'
+            }
           }
         }
       }
@@ -1345,6 +1342,33 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
   };
   var chart = new ApexCharts(document.querySelector("#gamesWithMostPlaytime"), options);
   chart.render();
+}
+
+function renderGamePlaytimeDivision(tenMostPlayedGames) {
+  var firstDraw = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  document.querySelector("#gamePlaytimeDivision").innerHTML = '';
+  var options = {
+    series: [44, 55, 41, 17, 15],
+    chart: {
+      type: 'donut',
+      animations: {
+        enabled: firstDraw,
+        speed: 400
+      }
+    },
+    responsive: [{
+      breakpoint: 480,
+      options: {
+        chart: {
+          width: 200
+        },
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }]
+  };
+  var chart = new ApexCharts(document.querySelector("#gamePlaytimeDivision"), options); // chart.render();
 }
 
 },{"./constants.es6":5,"./utils/DateTimeUtil.es6":7}],4:[function(require,module,exports){

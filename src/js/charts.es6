@@ -10,6 +10,7 @@ export function renderCharts(games, firstDraw=false) {
     .map(name => { return games[name[0]] })
 
   renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw)
+  renderGamePlaytimeDivision(tenMostPlayedGames, firstDraw)
 }
 
 function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
@@ -21,6 +22,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
     series: [{
       data: tenMostPlayedGames.map(a => a.play_time_seconds)
     }],
+    colors: ['#9babe9'],
     chart: {
       animations: {
         enabled: firstDraw,
@@ -48,27 +50,30 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
           textAnchor: 'start',
         }
       },
-      dataLabels: {
-        enabled: true,
-        style: {
-          colors: ['#333']
-        },
-        offsetX: 0
-      },
-    },
-    dataLabels: {
-      enabled: false
     },
     xaxis: {
       categories: tenMostPlayedGames.map(a => `${a.name} (${a.system.toUpperCase()})`),
       labels: {
-        formatter: (a) => {return `${parseInt(a / 60)} min`}
+        formatter: (a) => {return `${parseInt(a / 60)} min`},
+        style: {
+          colors: [ '#bbb', ],
+        }
       }
     },
     yaxis: {
       labels: {
         maxWidth: 300,
+        style: {
+          colors: '#bbb',
+        }
       }
+    },
+    dataLabels: {
+      enabled: false,
+      offsetX: 20,
+      style: {
+        colors: ['#333']
+      },
     },
     responsive: [{
       breakpoint: 768,
@@ -79,7 +84,10 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
         yaxis: {
           labels: {
             maxWidth: 160,
-          }
+            style: {
+              colors: '#bbb',
+            }
+          },
         },
       }
     }]
@@ -87,4 +95,36 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
 
   let chart = new ApexCharts(document.querySelector("#gamesWithMostPlaytime"), options);
   chart.render();
+}
+
+
+function renderGamePlaytimeDivision(tenMostPlayedGames, firstDraw=false) {
+
+  document.querySelector("#gamePlaytimeDivision").innerHTML = ''
+
+  let options = {
+    series: [44, 55, 41, 17, 15],
+    chart: {
+      type: 'donut',
+      animations: {
+        enabled: firstDraw,
+        speed: 400
+      },
+    },
+    responsive: [{
+      breakpoint: 480,
+      options: {
+        chart: {
+          width: 200
+        },
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }]
+  };
+
+  let chart = new ApexCharts(document.querySelector("#gamePlaytimeDivision"), options);
+  // chart.render();
+
 }
