@@ -2,7 +2,6 @@ import {hourMinuteFormat} from './utils/DateTimeUtil.es6'
 import {ANIMATIONS, COLORS, DATA_LABELS_COLORS} from './constants.es6'
 
 export function renderCharts(games, firstDraw=false) {
-  console.log('Updating chart...')
   const gameTitlesSortedByTimePlayed = Object.entries(games)
     .map(game => { return [ game[1].name, game[1].play_time_seconds ] })
     .sort((a, b) => { return b[1] - a[1] })
@@ -18,9 +17,6 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
   // reset graph container
   document.querySelector("#gamesWithMostPlaytime").innerHTML = ''
 
-  console.log(tenMostPlayedGames)
-  console.log(tenMostPlayedGames.map(a => a.name))
-
   let options = {
     series: [{
       data: tenMostPlayedGames.map(a => a.play_time_seconds)
@@ -34,7 +30,8 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
         show: false,
       },
       type: 'bar',
-      height: 350
+      height: 350,
+      width: '70%',
     },
     grid: {
       show: false,
@@ -66,7 +63,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
     xaxis: {
       categories: tenMostPlayedGames.map(a => `${a.name} (${a.system.toUpperCase()})`),
       labels: {
-        formatter: (a) => {return a}
+        formatter: (a) => {return `${parseInt(a / 60)} min`}
       }
     },
     yaxis: {

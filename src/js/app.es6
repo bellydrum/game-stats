@@ -16,6 +16,7 @@
  */
 
 import {request} from './utils/RequestUtil.es6'
+import {getDateFromStoredDate} from './utils/DateTimeUtil.es6'
 import * as charts from './charts.es6'
 import * as components from './components.es6'
 
@@ -35,6 +36,10 @@ import * as components from './components.es6'
       req: request,
       refreshFreq: 500,
       currentlyActive: false,
+      currentlyActiveTime: 0,
+      activityRefreshInterval: null,
+      chartRefreshInterval: null,
+      currentGameData: {},
 
       /**
        * DOM LISTENERS
@@ -308,15 +313,41 @@ import * as components from './components.es6'
        */
       start: async () => {
 
-        // show latest activity in header
+        // render header with latest activity data
         components.renderHeaderCard(await app.getCurrentGameData())
-        let renderHeaderCardInterval = setInterval(async function() {
+
+        // start an interval of refreshing the page
+        app.activityRefreshInterval = setInterval(async () => {
+
+          // get latest activity data
           const currentGameData = await app.getCurrentGameData()
+          // update activity data
           components.renderHeaderCard(currentGameData)
+          // store current status for logoff check
           const statusFlag = app.currentlyActive
+          // save current activity state
           app.currentlyActive = Object.keys(currentGameData.current_game).length !== 0
+          // logging off: update charts
           if(statusFlag && !app.currentlyActive) {
             charts.renderCharts(await app.getGamesData())
+          }
+          // update time active and add it to current game time_played_seconds
+          if(app.currentlyActive) {
+            if(Object.keys(currentGameData.current_game).length !== 0) {
+              app.currentlyActiveTime = Date.now() - getDateFromStoredDate(currentGameData.current_game.time_started)
+            }
+          }
+          // logging on: start chart refresh interval
+          if(!statusFlag && app.currentlyActive) {
+            app.currentGameData = currentGameData
+            app.chartRefreshInterval = setInterval(async () => {
+              const gamesData = await app.getGamesData()
+              gamesData[app.currentGameData.current_game.name].play_time_seconds = parseInt(app.currentlyActiveTime / 1000)
+              charts.renderCharts(gamesData)
+              if(!app.currentlyActive) {
+                clearInterval(app.chartRefreshInterval)
+              }
+            }, app.refreshFreq)
           }
         }, app.refreshFreq);
 

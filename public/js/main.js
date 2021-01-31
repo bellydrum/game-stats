@@ -755,6 +755,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 var _RequestUtil = require("./utils/RequestUtil.es6");
 
+var _DateTimeUtil = require("./utils/DateTimeUtil.es6");
+
 var charts = _interopRequireWildcard(require("./charts.es6"));
 
 var components = _interopRequireWildcard(require("./components.es6"));
@@ -781,6 +783,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       req: _RequestUtil.request,
       refreshFreq: 500,
       currentlyActive: false,
+      currentlyActiveTime: 0,
+      activityRefreshInterval: null,
+      chartRefreshInterval: null,
+      currentGameData: {},
 
       /**
        * DOM LISTENERS
@@ -1114,72 +1120,113 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
        * Behavior for the initial page load.
        */
       start: function () {
-        var _start = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-          var renderHeaderCardInterval;
-          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        var _start = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+          return regeneratorRuntime.wrap(function _callee6$(_context6) {
             while (1) {
-              switch (_context5.prev = _context5.next) {
+              switch (_context6.prev = _context6.next) {
                 case 0:
-                  _context5.t0 = components;
-                  _context5.next = 3;
+                  _context6.t0 = components;
+                  _context6.next = 3;
                   return app.getCurrentGameData();
 
                 case 3:
-                  _context5.t1 = _context5.sent;
+                  _context6.t1 = _context6.sent;
 
-                  _context5.t0.renderHeaderCard.call(_context5.t0, _context5.t1);
+                  _context6.t0.renderHeaderCard.call(_context6.t0, _context6.t1);
 
-                  renderHeaderCardInterval = setInterval( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+                  // start an interval of refreshing the page
+                  app.activityRefreshInterval = setInterval( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
                     var currentGameData, statusFlag;
-                    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    return regeneratorRuntime.wrap(function _callee5$(_context5) {
                       while (1) {
-                        switch (_context4.prev = _context4.next) {
+                        switch (_context5.prev = _context5.next) {
                           case 0:
-                            _context4.next = 2;
+                            _context5.next = 2;
                             return app.getCurrentGameData();
 
                           case 2:
-                            currentGameData = _context4.sent;
-                            components.renderHeaderCard(currentGameData);
-                            statusFlag = app.currentlyActive;
-                            app.currentlyActive = Object.keys(currentGameData.current_game).length !== 0;
+                            currentGameData = _context5.sent;
+                            // update activity data
+                            components.renderHeaderCard(currentGameData); // store current status for logoff check
+
+                            statusFlag = app.currentlyActive; // save current activity state
+
+                            app.currentlyActive = Object.keys(currentGameData.current_game).length !== 0; // logging off: update charts
 
                             if (!(statusFlag && !app.currentlyActive)) {
-                              _context4.next = 12;
+                              _context5.next = 12;
                               break;
                             }
 
-                            _context4.t0 = charts;
-                            _context4.next = 10;
+                            _context5.t0 = charts;
+                            _context5.next = 10;
                             return app.getGamesData();
 
                           case 10:
-                            _context4.t1 = _context4.sent;
+                            _context5.t1 = _context5.sent;
 
-                            _context4.t0.renderCharts.call(_context4.t0, _context4.t1);
+                            _context5.t0.renderCharts.call(_context5.t0, _context5.t1);
 
                           case 12:
+                            // update time active and add it to current game time_played_seconds
+                            if (app.currentlyActive) {
+                              if (Object.keys(currentGameData.current_game).length !== 0) {
+                                app.currentlyActiveTime = Date.now() - (0, _DateTimeUtil.getDateFromStoredDate)(currentGameData.current_game.time_started);
+                              }
+                            } // logging on: start chart refresh interval
+
+
+                            if (!statusFlag && app.currentlyActive) {
+                              app.currentGameData = currentGameData;
+                              app.chartRefreshInterval = setInterval( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+                                var gamesData;
+                                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                                  while (1) {
+                                    switch (_context4.prev = _context4.next) {
+                                      case 0:
+                                        _context4.next = 2;
+                                        return app.getGamesData();
+
+                                      case 2:
+                                        gamesData = _context4.sent;
+                                        gamesData[app.currentGameData.current_game.name].play_time_seconds = parseInt(app.currentlyActiveTime / 1000);
+                                        charts.renderCharts(gamesData);
+
+                                        if (!app.currentlyActive) {
+                                          clearInterval(app.chartRefreshInterval);
+                                        }
+
+                                      case 6:
+                                      case "end":
+                                        return _context4.stop();
+                                    }
+                                  }
+                                }, _callee4);
+                              })), app.refreshFreq);
+                            }
+
+                          case 14:
                           case "end":
-                            return _context4.stop();
+                            return _context5.stop();
                         }
                       }
-                    }, _callee4);
+                    }, _callee5);
                   })), app.refreshFreq);
-                  _context5.t2 = charts;
-                  _context5.next = 9;
+                  _context6.t2 = charts;
+                  _context6.next = 9;
                   return app.getGamesData();
 
                 case 9:
-                  _context5.t3 = _context5.sent;
+                  _context6.t3 = _context6.sent;
 
-                  _context5.t2.renderCharts.call(_context5.t2, _context5.t3, true);
+                  _context6.t2.renderCharts.call(_context6.t2, _context6.t3, true);
 
                 case 11:
                 case "end":
-                  return _context5.stop();
+                  return _context6.stop();
               }
             }
-          }, _callee5);
+          }, _callee6);
         }));
 
         function start() {
@@ -1194,7 +1241,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   });
 })();
 
-},{"./charts.es6":3,"./components.es6":4,"./utils/RequestUtil.es6":9}],3:[function(require,module,exports){
+},{"./charts.es6":3,"./components.es6":4,"./utils/DateTimeUtil.es6":7,"./utils/RequestUtil.es6":9}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1208,7 +1255,6 @@ var _constants = require("./constants.es6");
 
 function renderCharts(games) {
   var firstDraw = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  console.log('Updating chart...');
   var gameTitlesSortedByTimePlayed = Object.entries(games).map(function (game) {
     return [game[1].name, game[1].play_time_seconds];
   }).sort(function (a, b) {
@@ -1224,10 +1270,6 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
   var firstDraw = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   // reset graph container
   document.querySelector("#gamesWithMostPlaytime").innerHTML = '';
-  console.log(tenMostPlayedGames);
-  console.log(tenMostPlayedGames.map(function (a) {
-    return a.name;
-  }));
   var options = {
     series: [{
       data: tenMostPlayedGames.map(function (a) {
@@ -1243,7 +1285,8 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
         show: false
       },
       type: 'bar',
-      height: 350
+      height: 350,
+      width: '70%'
     },
     grid: {
       show: false,
@@ -1278,7 +1321,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
       }),
       labels: {
         formatter: function formatter(a) {
-          return a;
+          return "".concat(parseInt(a / 60), " min");
         }
       }
     },
