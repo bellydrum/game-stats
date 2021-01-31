@@ -37,7 +37,7 @@ export function getDateFromStoredDate(storedDate) {
 }
 
 export function getTimeFromStoredDate(date) {
-  return time_ago(getDateFromStoredDate(date))
+  return date ? time_ago(getDateFromStoredDate(date)) : ''
 }
 
 function time_ago(time) {

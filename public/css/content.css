@@ -3,6 +3,7 @@
 /* every panel on the page */
 .section-panel {
     width: 100%;
+    padding: 0px 10px;
     /*height: 80vh;                                           !* hardcoded height *!*/
     filter: drop-shadow(5px 0px 16px rgb(26, 26, 26));      /* cast shadow on upper section */
     display: flex;
@@ -16,10 +17,10 @@
     background: rgb(144,144,144);
     background: linear-gradient(90deg, rgba(144,144,144,1) 0%, rgba(78,78,94,1) 100%);
 }
-.info-column {
-    border: 1px dotted red;
-}
 
+.card {
+    background-color: rgb(245, 248, 255);
+}
 .header-card-info > div {
     margin-bottom: 12px;
 }

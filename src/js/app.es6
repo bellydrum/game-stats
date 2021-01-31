@@ -33,6 +33,8 @@ import * as components from './components.es6'
       cookie: null,
       onDesktop: null,
       req: request,
+      refreshFreq: 500,
+      currentlyActive: false,
 
       /**
        * DOM LISTENERS
@@ -306,12 +308,19 @@ import * as components from './components.es6'
        */
       start: async () => {
 
-        // get current games data
-        charts.renderCharts(await app.getGamesData())
+        // show latest activity in header
         components.renderHeaderCard(await app.getCurrentGameData())
         let renderHeaderCardInterval = setInterval(async function() {
-          components.renderHeaderCard(await app.getCurrentGameData())
-        }, 500);
+          const currentGameData = await app.getCurrentGameData()
+          components.renderHeaderCard(currentGameData)
+          const statusFlag = app.currentlyActive
+          app.currentlyActive = Object.keys(currentGameData.current_game).length !== 0
+          if(statusFlag && !app.currentlyActive) {
+            charts.renderCharts(await app.getGamesData())
+          }
+        }, app.refreshFreq);
+
+        charts.renderCharts(await app.getGamesData(), true)
       }
     }
 

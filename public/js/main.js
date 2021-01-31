@@ -779,6 +779,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       cookie: null,
       onDesktop: null,
       req: _RequestUtil.request,
+      refreshFreq: 500,
+      currentlyActive: false,
 
       /**
        * DOM LISTENERS
@@ -1118,45 +1120,59 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             while (1) {
               switch (_context5.prev = _context5.next) {
                 case 0:
-                  _context5.t0 = charts;
+                  _context5.t0 = components;
                   _context5.next = 3;
-                  return app.getGamesData();
+                  return app.getCurrentGameData();
 
                 case 3:
                   _context5.t1 = _context5.sent;
 
-                  _context5.t0.renderCharts.call(_context5.t0, _context5.t1);
-
-                  _context5.t2 = components;
-                  _context5.next = 8;
-                  return app.getCurrentGameData();
-
-                case 8:
-                  _context5.t3 = _context5.sent;
-
-                  _context5.t2.renderHeaderCard.call(_context5.t2, _context5.t3);
+                  _context5.t0.renderHeaderCard.call(_context5.t0, _context5.t1);
 
                   renderHeaderCardInterval = setInterval( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+                    var currentGameData, statusFlag;
                     return regeneratorRuntime.wrap(function _callee4$(_context4) {
                       while (1) {
                         switch (_context4.prev = _context4.next) {
                           case 0:
-                            _context4.t0 = components;
-                            _context4.next = 3;
+                            _context4.next = 2;
                             return app.getCurrentGameData();
 
-                          case 3:
+                          case 2:
+                            currentGameData = _context4.sent;
+                            components.renderHeaderCard(currentGameData);
+                            statusFlag = app.currentlyActive;
+                            app.currentlyActive = Object.keys(currentGameData.current_game).length !== 0;
+
+                            if (!(statusFlag && !app.currentlyActive)) {
+                              _context4.next = 12;
+                              break;
+                            }
+
+                            _context4.t0 = charts;
+                            _context4.next = 10;
+                            return app.getGamesData();
+
+                          case 10:
                             _context4.t1 = _context4.sent;
 
-                            _context4.t0.renderHeaderCard.call(_context4.t0, _context4.t1);
+                            _context4.t0.renderCharts.call(_context4.t0, _context4.t1);
 
-                          case 5:
+                          case 12:
                           case "end":
                             return _context4.stop();
                         }
                       }
                     }, _callee4);
-                  })), 500);
+                  })), app.refreshFreq);
+                  _context5.t2 = charts;
+                  _context5.next = 9;
+                  return app.getGamesData();
+
+                case 9:
+                  _context5.t3 = _context5.sent;
+
+                  _context5.t2.renderCharts.call(_context5.t2, _context5.t3, true);
 
                 case 11:
                 case "end":
@@ -1191,6 +1207,8 @@ var _DateTimeUtil = require("./utils/DateTimeUtil.es6");
 var _constants = require("./constants.es6");
 
 function renderCharts(games) {
+  var firstDraw = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  console.log('Updating chart...');
   var gameTitlesSortedByTimePlayed = Object.entries(games).map(function (game) {
     return [game[1].name, game[1].play_time_seconds];
   }).sort(function (a, b) {
@@ -1198,10 +1216,93 @@ function renderCharts(games) {
   });
   var tenMostPlayedGames = gameTitlesSortedByTimePlayed.slice(0, 10).map(function (name) {
     return games[name[0]];
-  }); //
-  // renderMostPlayedGamesBar(tenMostPlayedGames)
-  // // renderMostPlayedGamesTreeMap(tenMostPlayedGames)
-  // renderPastGameTime(tenMostPlayedGames)
+  });
+  renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw);
+}
+
+function renderGamesWithMostPlaytime(tenMostPlayedGames) {
+  var firstDraw = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  // reset graph container
+  document.querySelector("#gamesWithMostPlaytime").innerHTML = '';
+  console.log(tenMostPlayedGames);
+  console.log(tenMostPlayedGames.map(function (a) {
+    return a.name;
+  }));
+  var options = {
+    series: [{
+      data: tenMostPlayedGames.map(function (a) {
+        return a.play_time_seconds;
+      })
+    }],
+    chart: {
+      animations: {
+        enabled: firstDraw,
+        speed: 400
+      },
+      toolbar: {
+        show: false
+      },
+      type: 'bar',
+      height: 350
+    },
+    grid: {
+      show: false,
+      yaxis: {
+        lines: {
+          show: false
+        }
+      }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        dataLabels: {
+          position: 'left',
+          textAnchor: 'start'
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        style: {
+          colors: ['#333']
+        },
+        offsetX: 0
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    xaxis: {
+      categories: tenMostPlayedGames.map(function (a) {
+        return "".concat(a.name, " (").concat(a.system.toUpperCase(), ")");
+      }),
+      labels: {
+        formatter: function formatter(a) {
+          return a;
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        maxWidth: 300
+      }
+    },
+    responsive: [{
+      breakpoint: 768,
+      options: {
+        // chart: {
+        //   width: '70%',
+        // },
+        yaxis: {
+          labels: {
+            maxWidth: 160
+          }
+        }
+      }
+    }]
+  };
+  var chart = new ApexCharts(document.querySelector("#gamesWithMostPlaytime"), options);
+  chart.render();
 }
 
 },{"./constants.es6":5,"./utils/DateTimeUtil.es6":7}],4:[function(require,module,exports){
@@ -1215,17 +1316,18 @@ exports.renderHeaderCard = renderHeaderCard;
 var _DateTimeUtil = require("./utils/DateTimeUtil.es6");
 
 function renderHeaderCard(currentGameData) {
-  console.log(currentGameData);
   var currentGame = currentGameData.current_game;
   var lastGame = currentGameData.previous_game;
-  var currentGameLabelText = 'Currently playing';
-  var notActiveLabelText = 'The pi is currently off.';
-  var lastGameLabelText = 'Previous game';
+  var currentGameLabelText = 'Now playing';
+  var notActiveLabelText = 'Currently inactive.';
+  var lastGameLabelText = 'Last played';
   var currentGameSectionId = 'currently-playing-info';
   var lastPlayedGameSectionId = 'last-played-info';
   var slightlyBolder = '';
   var slightlySmaller = 'is-size-7';
   var slightlyLarger = 'is-size-6';
+  var currentlyPlayingColor = '#00c206';
+  var inactiveColor = '#cc0000';
   var currentlyPlaying = document.getElementById(currentGameSectionId);
   var lastPlayed = document.getElementById(lastPlayedGameSectionId);
   /** reset page state upon each refresh **/
@@ -1243,6 +1345,7 @@ function renderHeaderCard(currentGameData) {
     currentGameTitle.className = slightlyLarger;
     currentGameTitle.appendChild(document.createTextNode("".concat(currentGame.name, " (").concat(currentGame.system.toUpperCase(), ")")));
     currentGameTitle.style.fontStyle = 'italic';
+    currentGameTitle.style.color = currentlyPlayingColor;
     currentlyPlaying.append(currentGameTitle); // uncomment the next line to test game cover images
     // document.getElementById('current-game-image').classList.remove('is-hidden')
 
@@ -1251,11 +1354,20 @@ function renderHeaderCard(currentGameData) {
     /** no game is being played **/
     var _currentGameLabel = document.createElement('div');
 
-    _currentGameLabel.className = "".concat(slightlyBolder, " ").concat(slightlyLarger);
+    _currentGameLabel.className = "".concat(slightlyBolder, " ").concat(slightlySmaller);
 
     _currentGameLabel.appendChild(document.createTextNode(notActiveLabelText));
 
-    currentlyPlaying.append(_currentGameLabel);
+    currentlyPlaying.append(_currentGameLabel); // append div with empty string to maintain structure... refactor later
+
+    var _currentGameTitle = document.createElement('div');
+
+    _currentGameTitle.className = slightlyLarger;
+
+    _currentGameTitle.appendChild(document.createTextNode('Check back later!'));
+
+    _currentGameTitle.style.color = inactiveColor;
+    currentlyPlaying.append(_currentGameTitle);
     document.getElementById('current-game-image').classList.add('is-hidden');
     document.getElementById('last-updated-time').innerText = "As of ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(lastGame.time_ended));
   }
@@ -1354,7 +1466,7 @@ function getDateFromStoredDate(storedDate) {
 }
 
 function getTimeFromStoredDate(date) {
-  return time_ago(getDateFromStoredDate(date));
+  return date ? time_ago(getDateFromStoredDate(date)) : '';
 }
 
 function time_ago(time) {
