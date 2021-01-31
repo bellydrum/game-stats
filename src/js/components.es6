@@ -1,9 +1,13 @@
+import {getTimeFromStoredDate} from './utils/DateTimeUtil.es6'
+
 export function renderHeaderCard(currentGameData) {
+
+  console.log(currentGameData)
 
   const currentGame = currentGameData.current_game
   const lastGame = currentGameData.previous_game
 
-  const currentGameLabelText = 'Currently playing:'
+  const currentGameLabelText = 'Currently playing'
   const notActiveLabelText = 'The pi is currently off.'
   const lastGameLabelText = 'Previous game'
   const currentGameSectionId = 'currently-playing-info'
@@ -28,12 +32,15 @@ export function renderHeaderCard(currentGameData) {
     currentGameTitle.style.fontStyle = 'italic'
     currentlyPlaying.append(currentGameTitle)
 
+    document.getElementById('last-updated-time').innerText = `Last updated ${getTimeFromStoredDate(currentGame.time_started)}`
   } else {
 
     const currentGameLabel = document.createElement('div')
-    currentGameLabel.className = `${slightlyBolder} ${slightlySmaller}`
+    currentGameLabel.className = `${slightlyBolder} ${slightlyLarger}`
     currentGameLabel.appendChild(document.createTextNode(notActiveLabelText))
     currentlyPlaying.append(currentGameLabel)
+
+    document.getElementById('last-updated-time').innerText = `Last updated ${getTimeFromStoredDate(lastGame.time_ended)}`
   }
 
   const lastGameLabel = document.createElement('div')

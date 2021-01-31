@@ -1189,10 +1189,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.renderHeaderCard = renderHeaderCard;
 
+var _DateTimeUtil = require("./utils/DateTimeUtil.es6");
+
 function renderHeaderCard(currentGameData) {
+  console.log(currentGameData);
   var currentGame = currentGameData.current_game;
   var lastGame = currentGameData.previous_game;
-  var currentGameLabelText = 'Currently playing:';
+  var currentGameLabelText = 'Currently playing';
   var notActiveLabelText = 'The pi is currently off.';
   var lastGameLabelText = 'Previous game';
   var currentGameSectionId = 'currently-playing-info';
@@ -1213,14 +1216,16 @@ function renderHeaderCard(currentGameData) {
     currentGameTitle.appendChild(document.createTextNode("".concat(currentGame.name, " (").concat(currentGame.system.toUpperCase(), ")")));
     currentGameTitle.style.fontStyle = 'italic';
     currentlyPlaying.append(currentGameTitle);
+    document.getElementById('last-updated-time').innerText = "Last updated ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(currentGame.time_started));
   } else {
     var _currentGameLabel = document.createElement('div');
 
-    _currentGameLabel.className = "".concat(slightlyBolder, " ").concat(slightlySmaller);
+    _currentGameLabel.className = "".concat(slightlyBolder, " ").concat(slightlyLarger);
 
     _currentGameLabel.appendChild(document.createTextNode(notActiveLabelText));
 
     currentlyPlaying.append(_currentGameLabel);
+    document.getElementById('last-updated-time').innerText = "Last updated ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(lastGame.time_ended));
   }
 
   var lastGameLabel = document.createElement('div');
@@ -1234,7 +1239,7 @@ function renderHeaderCard(currentGameData) {
   lastPlayed.append(lastGameTitle);
 }
 
-},{}],5:[function(require,module,exports){
+},{"./utils/DateTimeUtil.es6":7}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1265,15 +1270,118 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.hourMinuteFormat = hourMinuteFormat;
+exports.convertStoredDateString = convertStoredDateString;
+exports.getDateFromStoredDate = getDateFromStoredDate;
+exports.getTimeFromStoredDate = getTimeFromStoredDate;
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function hourMinuteFormat(minutes) {
   /**
    * @param minutes <number>
    * @return 1 hr, 39 min
-   * @type {string}
    */
   var formatted = new Date(minutes * 60 * 1000).toISOString();
   return "".concat(parseInt(formatted.substr(11, 2)), " hr, ").concat(parseInt(formatted.substr(14, 2)), " min");
+}
+
+function convertStoredDateString(date) {
+  var makeReadable = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+  /**
+   * @param date            <string/Date>   date to be formatted
+   * @param makeReadable    <string>        true: convert from ISO to readable; when false, vice versa.
+   * @return <string>
+   */
+  console.log(date);
+
+  if (makeReadable) {
+    /** from %H:%M:%S %m-%d-%Y to January 31, 2021 at 7:32 PM **/
+    var newDate = getDateFromStoredDate(date);
+    var monthName = newDate.toLocaleString('en-us', {
+      month: 'long'
+    });
+    var readableTime = newDate.toLocaleString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    });
+    date = "".concat(monthName, " ").concat(newDate.getDate(), ", ").concat(newDate.getFullYear(), " at ").concat(readableTime, " CST");
+  }
+
+  return date;
+}
+
+function getDateFromStoredDate(storedDate) {
+  var dateSplitOnSpace = storedDate.split(' ');
+  var h = dateSplitOnSpace[0].split(':');
+  var m = dateSplitOnSpace[1].split('-');
+  return new Date(new Date("".concat(m[2], "-").concat(m[0], "-").concat(m[1], "T").concat(h[0], ":").concat(h[1], ":").concat(h[2])).toLocaleString('en-us', {
+    timeZone: 'CST'
+  }));
+}
+
+function getTimeFromStoredDate(date) {
+  return time_ago(getDateFromStoredDate(date));
+}
+
+function time_ago(time) {
+  switch (_typeof(time)) {
+    case 'number':
+      break;
+
+    case 'string':
+      time = +new Date(time);
+      break;
+
+    case 'object':
+      if (time.constructor === Date) time = time.getTime();
+      break;
+
+    default:
+      time = +new Date();
+  }
+
+  var time_formats = [[60, 'seconds', 1], // 60
+  [120, '1 minute ago', '1 minute from now'], // 60*2
+  [3600, 'minutes', 60], // 60*60, 60
+  [7200, '1 hour ago', '1 hour from now'], // 60*60*2
+  [86400, 'hours', 3600], // 60*60*24, 60*60
+  [172800, 'Yesterday', 'Tomorrow'], // 60*60*24*2
+  [604800, 'days', 86400], // 60*60*24*7, 60*60*24
+  [1209600, 'Last week', 'Next week'], // 60*60*24*7*4*2
+  [2419200, 'weeks', 604800], // 60*60*24*7*4, 60*60*24*7
+  [4838400, 'Last month', 'Next month'], // 60*60*24*7*4*2
+  [29030400, 'months', 2419200], // 60*60*24*7*4*12, 60*60*24*7*4
+  [58060800, 'Last year', 'Next year'], // 60*60*24*7*4*12*2
+  [2903040000, 'years', 29030400], // 60*60*24*7*4*12*100, 60*60*24*7*4*12
+  [5806080000, 'Last century', 'Next century'], // 60*60*24*7*4*12*100*2
+  [58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
+  ];
+  var seconds = (+new Date() - time) / 1000,
+      token = 'ago',
+      list_choice = 1;
+
+  if (seconds === 0) {
+    return 'Just now';
+  }
+
+  if (seconds < 0) {
+    seconds = Math.abs(seconds);
+    token = 'from now';
+    list_choice = 2;
+  }
+
+  var i = 0,
+      format;
+
+  while (format = time_formats[i++]) {
+    if (seconds < format[0]) {
+      if (typeof format[2] == 'string') return format[list_choice];else return Math.floor(seconds / format[2]) + ' ' + format[1] + ' ' + token;
+    }
+  }
+
+  return time;
 }
 
 },{}],8:[function(require,module,exports){
