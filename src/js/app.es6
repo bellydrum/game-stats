@@ -329,7 +329,7 @@ import * as components from './components.es6'
           app.currentlyActive = Object.keys(currentGameData.current_game).length !== 0
           // logging off: update charts
           if(statusFlag && !app.currentlyActive) {
-            charts.renderCharts(await app.getGamesData())
+            app.currentlyActiveTime = 0
           }
           // update time active and add it to current game time_played_seconds
           if(app.currentlyActive) {
