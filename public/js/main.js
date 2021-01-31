@@ -1112,35 +1112,50 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
        * Behavior for the initial page load.
        */
       start: function () {
-        var _start = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-          return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        var _start = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+          var renderHeaderCardInterval;
+          return regeneratorRuntime.wrap(function _callee5$(_context5) {
             while (1) {
-              switch (_context4.prev = _context4.next) {
+              switch (_context5.prev = _context5.next) {
                 case 0:
-                  _context4.t0 = components;
-                  _context4.next = 3;
-                  return app.getCurrentGameData();
-
-                case 3:
-                  _context4.t1 = _context4.sent;
-
-                  _context4.t0.renderHeaderCard.call(_context4.t0, _context4.t1);
-
-                  _context4.t2 = charts;
-                  _context4.next = 8;
+                  _context5.t0 = charts;
+                  _context5.next = 3;
                   return app.getGamesData();
 
-                case 8:
-                  _context4.t3 = _context4.sent;
+                case 3:
+                  _context5.t1 = _context5.sent;
 
-                  _context4.t2.renderCharts.call(_context4.t2, _context4.t3);
+                  _context5.t0.renderCharts.call(_context5.t0, _context5.t1);
 
-                case 10:
+                  // components.renderHeaderCard(await app.getCurrentGameData())
+                  renderHeaderCardInterval = setInterval( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+                    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                      while (1) {
+                        switch (_context4.prev = _context4.next) {
+                          case 0:
+                            _context4.t0 = components;
+                            _context4.next = 3;
+                            return app.getCurrentGameData();
+
+                          case 3:
+                            _context4.t1 = _context4.sent;
+
+                            _context4.t0.renderHeaderCard.call(_context4.t0, _context4.t1);
+
+                          case 5:
+                          case "end":
+                            return _context4.stop();
+                        }
+                      }
+                    }, _callee4);
+                  })), 500);
+
+                case 6:
                 case "end":
-                  return _context4.stop();
+                  return _context5.stop();
               }
             }
-          }, _callee4);
+          }, _callee5);
         }));
 
         function start() {
@@ -1205,8 +1220,13 @@ function renderHeaderCard(currentGameData) {
   var slightlyLarger = 'is-size-6';
   var currentlyPlaying = document.getElementById(currentGameSectionId);
   var lastPlayed = document.getElementById(lastPlayedGameSectionId);
+  /** reset page state upon each refresh **/
+
+  currentlyPlaying.innerHTML = '';
+  lastPlayed.innerHTML = '';
 
   if (Object.keys(currentGame).length !== 0) {
+    /** a game is currently being played **/
     var currentGameLabel = document.createElement('div');
     currentGameLabel.className = "".concat(slightlyBolder, " ").concat(slightlySmaller);
     currentGameLabel.appendChild(document.createTextNode(currentGameLabelText));
@@ -1216,8 +1236,10 @@ function renderHeaderCard(currentGameData) {
     currentGameTitle.appendChild(document.createTextNode("".concat(currentGame.name, " (").concat(currentGame.system.toUpperCase(), ")")));
     currentGameTitle.style.fontStyle = 'italic';
     currentlyPlaying.append(currentGameTitle);
+    document.getElementById('current-game-image').classList.remove('is-hidden');
     document.getElementById('last-updated-time').innerText = "Last updated ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(currentGame.time_started));
   } else {
+    /** no game is being played **/
     var _currentGameLabel = document.createElement('div');
 
     _currentGameLabel.className = "".concat(slightlyBolder, " ").concat(slightlyLarger);
@@ -1225,6 +1247,7 @@ function renderHeaderCard(currentGameData) {
     _currentGameLabel.appendChild(document.createTextNode(notActiveLabelText));
 
     currentlyPlaying.append(_currentGameLabel);
+    document.getElementById('current-game-image').classList.add('is-hidden');
     document.getElementById('last-updated-time').innerText = "Last updated ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(lastGame.time_ended));
   }
 

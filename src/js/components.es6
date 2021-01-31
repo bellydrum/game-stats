@@ -19,7 +19,12 @@ export function renderHeaderCard(currentGameData) {
   const currentlyPlaying = document.getElementById(currentGameSectionId)
   const lastPlayed = document.getElementById(lastPlayedGameSectionId)
 
+  /** reset page state upon each refresh **/
+  currentlyPlaying.innerHTML = ''
+  lastPlayed.innerHTML = ''
+
   if(Object.keys(currentGame).length !== 0) {
+    /** a game is currently being played **/
 
     const currentGameLabel = document.createElement('div')
     currentGameLabel.className = `${slightlyBolder} ${slightlySmaller}`
@@ -32,14 +37,17 @@ export function renderHeaderCard(currentGameData) {
     currentGameTitle.style.fontStyle = 'italic'
     currentlyPlaying.append(currentGameTitle)
 
+    document.getElementById('current-game-image').classList.remove('is-hidden')
     document.getElementById('last-updated-time').innerText = `Last updated ${getTimeFromStoredDate(currentGame.time_started)}`
   } else {
+    /** no game is being played **/
 
     const currentGameLabel = document.createElement('div')
     currentGameLabel.className = `${slightlyBolder} ${slightlyLarger}`
     currentGameLabel.appendChild(document.createTextNode(notActiveLabelText))
     currentlyPlaying.append(currentGameLabel)
 
+    document.getElementById('current-game-image').classList.add('is-hidden')
     document.getElementById('last-updated-time').innerText = `Last updated ${getTimeFromStoredDate(lastGame.time_ended)}`
   }
 
