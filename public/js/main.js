@@ -1327,9 +1327,9 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
   document.querySelector("#gamesWithMostPlaytime").innerHTML = '';
   var options = {
     series: [{
-      name: 'Minutes played',
+      name: 'Time played',
       data: tenMostPlayedGames.map(function (a) {
-        return parseInt(a.play_time_seconds / 60);
+        return a.play_time_seconds;
       })
     }],
     colors: ['#9babe9'],
@@ -1368,7 +1368,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
       }),
       labels: {
         formatter: function formatter(a) {
-          return "".concat(Number(a / 60).toFixed(1), " hours");
+          return "".concat(Number(a / 60 / 60).toFixed(1), " hours");
         },
         // format the result of series data
         style: {
@@ -1389,6 +1389,20 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
       offsetX: 20,
       style: {
         colors: ['#333']
+      }
+    },
+    tooltip: {
+      theme: 'dark',
+      followCursor: true,
+      y: {
+        formatter: function formatter(value, _ref) {
+          var seriesIndex = _ref.seriesIndex,
+              dataPointIndex = _ref.dataPointIndex,
+              w = _ref.w;
+          var hoursMinutesSeconds = (0, _DateTimeUtil.getHourMinSecFromSeconds)(value);
+          console.log(hoursMinutesSeconds);
+          return "".concat(hoursMinutesSeconds[0], ":").concat(hoursMinutesSeconds[1], ":").concat(hoursMinutesSeconds[2]);
+        }
       }
     },
     states: {
@@ -1641,7 +1655,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.hourMinuteFormat = hourMinuteFormat;
 exports.convertStoredDateString = convertStoredDateString;
-exports.getMinSecFromFloat = getMinSecFromFloat;
+exports.getHourMinSecFromSeconds = getHourMinSecFromSeconds;
 exports.getDateFromStoredDate = getDateFromStoredDate;
 exports.getTimeSinceStoredDate = getTimeSinceStoredDate;
 
@@ -1683,8 +1697,16 @@ function convertStoredDateString(date) {
   return date;
 }
 
-function getMinSecFromFloat(number) {
-  return [parseInt(number), parseInt(Number(number % 1 * 60).toFixed(2))];
+function getHourMinSecFromSeconds(number) {
+  var hours = parseInt(number / 60 / 60);
+  var minutes = parseInt(number / 60) % 60;
+  var seconds = parseInt(number % 60); //const seconds = parseInt(Number((number % 1) * 60).toFixed(2))
+  //return [
+  //    parseInt(number).toString(), // minutes
+  //    seconds.toString().length === 2 ? seconds : '0' + seconds.toString() // seconds
+  //]
+
+  return [hours.toString(), minutes.toString().length === 2 ? minutes : "0".concat(minutes.toString()), seconds.toString().length === 2 ? seconds : "0".concat(seconds.toString())];
 }
 
 function getDateFromStoredDate(storedDate) {

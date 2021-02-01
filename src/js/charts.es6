@@ -1,4 +1,4 @@
-import {hourMinuteFormat, getMinSecFromFloat} from './utils/DateTimeUtil.es6'
+import {hourMinuteFormat, getHourMinSecFromSeconds} from './utils/DateTimeUtil.es6'
 import {ANIMATIONS, COLORS, DATA_LABELS_COLORS} from './constants.es6'
 
 export function renderCharts(games, firstDraw=false) {
@@ -20,8 +20,8 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
 
   let options = {
     series: [{
-      name: 'Minutes played',
-      data: tenMostPlayedGames.map(a => parseInt(a.play_time_seconds / 60))
+      name: 'Time played',
+      data: tenMostPlayedGames.map(a => a.play_time_seconds)
     }],
    colors: ['#9babe9'],
     chart: {
@@ -56,7 +56,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
     xaxis: {
       categories: tenMostPlayedGames.map(a => `${a.name} (${a.system.toUpperCase()})`),
       labels: {
-        formatter: (a) => {return `${Number(a / 60).toFixed(1)} hours`}, // format the result of series data
+        formatter: (a) => {return `${Number((a / 60) / 60).toFixed(1)} hours`}, // format the result of series data
         style: {
           colors: [ '#bbb', ],
         }
@@ -76,6 +76,17 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
       style: {
         colors: ['#333']
       },
+    },
+    tooltip: {
+        theme: 'dark',
+        followCursor: true,
+        y: {
+            formatter: (value, {seriesIndex, dataPointIndex, w}) => {
+                const hoursMinutesSeconds = getHourMinSecFromSeconds(value)
+                console.log(hoursMinutesSeconds)
+                return `${hoursMinutesSeconds[0]}:${hoursMinutesSeconds[1]}:${hoursMinutesSeconds[2]}`
+            }
+        },
     },
     states: {
       active: {

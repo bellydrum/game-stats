@@ -28,8 +28,20 @@ export function convertStoredDateString(date, makeReadable=true) {
   return date
 }
 
-export function getMinSecFromFloat(number) {
-    return [parseInt(number), parseInt(Number((number % 1) * 60).toFixed(2))]
+export function getHourMinSecFromSeconds(number) {
+    const hours = parseInt((number / 60) / 60)
+    const minutes = parseInt(number / 60) % 60
+    const seconds = parseInt(number % 60)
+    //const seconds = parseInt(Number((number % 1) * 60).toFixed(2))
+    //return [
+    //    parseInt(number).toString(), // minutes
+    //    seconds.toString().length === 2 ? seconds : '0' + seconds.toString() // seconds
+    //]
+    return [
+        hours.toString(),
+        minutes.toString().length === 2 ? minutes : `0${minutes.toString()}`,
+        seconds.toString().length === 2 ? seconds : `0${seconds.toString()}`
+    ]
 }
 
 export function getDateFromStoredDate(storedDate) {
