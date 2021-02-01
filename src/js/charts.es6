@@ -83,7 +83,6 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
         y: {
             formatter: (value, {seriesIndex, dataPointIndex, w}) => {
                 const hoursMinutesSeconds = getHourMinSecFromSeconds(value)
-                console.log(hoursMinutesSeconds)
                 return `${hoursMinutesSeconds[0]}:${hoursMinutesSeconds[1]}:${hoursMinutesSeconds[2]}`
             }
         },
@@ -128,57 +127,6 @@ function renderGamePlaytimeDivision(tenMostPlayedGames, firstDraw=false) {
 
   document.querySelector("#gamePlaytimeDivision").innerHTML = ''
 
-  // let options = {
-  //   series: tenMostPlayedGames.slice(0, 5).map(a => a.play_time_seconds),
-  //   labels: tenMostPlayedGames.slice(0, 5).map(a => `${a.name} (${a.system.toUpperCase()})`),
-  //   chart: {
-  //     type: 'donut',
-  //     animations: {
-  //       enabled: firstDraw,
-  //       speed: 400
-  //     },
-  //   },
-  //   legend: {
-  //     show: true,
-  //     position: 'right',
-  //     floating: true,
-  //     labels: {
-  //       colors: '#bbb'
-  //     }
-  //   },
-  //   dataLabels: {
-  //     enabled: false
-  //   },
-  //   plotOptions: {
-  //     pie: {
-  //       expandOnClick: false,
-  //       customScale: 0.5,
-  //       donut: {
-  //         size: '80%',
-  //       }
-  //     }
-  //   },
-  //   responsive: [{
-  //     breakpoint: 480,
-  //     options: {
-  //       chart: {
-  //         width: 200
-  //       },
-  //       legend: {
-  //         position: 'bottom',
-  //         floating: true
-  //       },
-  //       plotOptions: {
-  //         pie: {
-  //           customScale: 0.9,
-  //           donut: {
-  //             size: '70%',
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }]
-  // };
 
   let options = {
       series: tenMostPlayedGames.slice(0, 5).map(a => a.play_time_seconds),
@@ -203,6 +151,14 @@ function renderGamePlaytimeDivision(tenMostPlayedGames, firstDraw=false) {
         labels: {
           colors: '#bbb'
         }
+    },
+    tooltip: {
+        y: {
+            formatter: (value, {seriesIndex, dataPointIndex, w}) => {
+                const hoursMinutesSeconds = getHourMinSecFromSeconds(value)
+                return `${hoursMinutesSeconds[0]}:${hoursMinutesSeconds[1]}:${hoursMinutesSeconds[2]}`
+            }
+        },
     },
     responsive: [{
       breakpoint: 480,

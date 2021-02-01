@@ -1400,7 +1400,6 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
               dataPointIndex = _ref.dataPointIndex,
               w = _ref.w;
           var hoursMinutesSeconds = (0, _DateTimeUtil.getHourMinSecFromSeconds)(value);
-          console.log(hoursMinutesSeconds);
           return "".concat(hoursMinutesSeconds[0], ":").concat(hoursMinutesSeconds[1], ":").concat(hoursMinutesSeconds[2]);
         }
       }
@@ -1445,58 +1444,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
 
 function renderGamePlaytimeDivision(tenMostPlayedGames) {
   var firstDraw = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  document.querySelector("#gamePlaytimeDivision").innerHTML = ''; // let options = {
-  //   series: tenMostPlayedGames.slice(0, 5).map(a => a.play_time_seconds),
-  //   labels: tenMostPlayedGames.slice(0, 5).map(a => `${a.name} (${a.system.toUpperCase()})`),
-  //   chart: {
-  //     type: 'donut',
-  //     animations: {
-  //       enabled: firstDraw,
-  //       speed: 400
-  //     },
-  //   },
-  //   legend: {
-  //     show: true,
-  //     position: 'right',
-  //     floating: true,
-  //     labels: {
-  //       colors: '#bbb'
-  //     }
-  //   },
-  //   dataLabels: {
-  //     enabled: false
-  //   },
-  //   plotOptions: {
-  //     pie: {
-  //       expandOnClick: false,
-  //       customScale: 0.5,
-  //       donut: {
-  //         size: '80%',
-  //       }
-  //     }
-  //   },
-  //   responsive: [{
-  //     breakpoint: 480,
-  //     options: {
-  //       chart: {
-  //         width: 200
-  //       },
-  //       legend: {
-  //         position: 'bottom',
-  //         floating: true
-  //       },
-  //       plotOptions: {
-  //         pie: {
-  //           customScale: 0.9,
-  //           donut: {
-  //             size: '70%',
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }]
-  // };
-
+  document.querySelector("#gamePlaytimeDivision").innerHTML = '';
   var options = {
     series: tenMostPlayedGames.slice(0, 5).map(function (a) {
       return a.play_time_seconds;
@@ -1523,6 +1471,17 @@ function renderGamePlaytimeDivision(tenMostPlayedGames) {
     legend: {
       labels: {
         colors: '#bbb'
+      }
+    },
+    tooltip: {
+      y: {
+        formatter: function formatter(value, _ref2) {
+          var seriesIndex = _ref2.seriesIndex,
+              dataPointIndex = _ref2.dataPointIndex,
+              w = _ref2.w;
+          var hoursMinutesSeconds = (0, _DateTimeUtil.getHourMinSecFromSeconds)(value);
+          return "".concat(hoursMinutesSeconds[0], ":").concat(hoursMinutesSeconds[1], ":").concat(hoursMinutesSeconds[2]);
+        }
       }
     },
     responsive: [{
@@ -1700,12 +1659,7 @@ function convertStoredDateString(date) {
 function getHourMinSecFromSeconds(number) {
   var hours = parseInt(number / 60 / 60);
   var minutes = parseInt(number / 60) % 60;
-  var seconds = parseInt(number % 60); //const seconds = parseInt(Number((number % 1) * 60).toFixed(2))
-  //return [
-  //    parseInt(number).toString(), // minutes
-  //    seconds.toString().length === 2 ? seconds : '0' + seconds.toString() // seconds
-  //]
-
+  var seconds = parseInt(number % 60);
   return [hours.toString(), minutes.toString().length === 2 ? minutes : "0".concat(minutes.toString()), seconds.toString().length === 2 ? seconds : "0".concat(seconds.toString())];
 }
 
