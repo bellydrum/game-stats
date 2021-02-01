@@ -1327,8 +1327,9 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
   document.querySelector("#gamesWithMostPlaytime").innerHTML = '';
   var options = {
     series: [{
+      name: 'Minutes played',
       data: tenMostPlayedGames.map(function (a) {
-        return a.play_time_seconds;
+        return parseInt(a.play_time_seconds / 60);
       })
     }],
     colors: ['#9babe9'],
@@ -1337,6 +1338,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
         enabled: firstDraw,
         speed: 400
       },
+      redrawOnWindowResize: false,
       toolbar: {
         show: false
       },
@@ -1366,8 +1368,9 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
       }),
       labels: {
         formatter: function formatter(a) {
-          return "".concat(parseInt(a / 60), " min");
+          return "".concat(Number(a / 60).toFixed(1), " hours");
         },
+        // format the result of series data
         style: {
           colors: ['#bbb']
         }
@@ -1638,6 +1641,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.hourMinuteFormat = hourMinuteFormat;
 exports.convertStoredDateString = convertStoredDateString;
+exports.getMinSecFromFloat = getMinSecFromFloat;
 exports.getDateFromStoredDate = getDateFromStoredDate;
 exports.getTimeSinceStoredDate = getTimeSinceStoredDate;
 
@@ -1677,6 +1681,10 @@ function convertStoredDateString(date) {
   }
 
   return date;
+}
+
+function getMinSecFromFloat(number) {
+  return [parseInt(number), parseInt(Number(number % 1 * 60).toFixed(2))];
 }
 
 function getDateFromStoredDate(storedDate) {

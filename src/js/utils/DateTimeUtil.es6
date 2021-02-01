@@ -28,6 +28,10 @@ export function convertStoredDateString(date, makeReadable=true) {
   return date
 }
 
+export function getMinSecFromFloat(number) {
+    return [parseInt(number), parseInt(Number((number % 1) * 60).toFixed(2))]
+}
+
 export function getDateFromStoredDate(storedDate) {
   const dateSplitOnSpace = storedDate.split(' ')
   const h = dateSplitOnSpace[0].split(':')

@@ -1,4 +1,4 @@
-import {hourMinuteFormat} from './utils/DateTimeUtil.es6'
+import {hourMinuteFormat, getMinSecFromFloat} from './utils/DateTimeUtil.es6'
 import {ANIMATIONS, COLORS, DATA_LABELS_COLORS} from './constants.es6'
 
 export function renderCharts(games, firstDraw=false) {
@@ -20,14 +20,16 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
 
   let options = {
     series: [{
-      data: tenMostPlayedGames.map(a => a.play_time_seconds)
+      name: 'Minutes played',
+      data: tenMostPlayedGames.map(a => parseInt(a.play_time_seconds / 60))
     }],
-    colors: ['#9babe9'],
+   colors: ['#9babe9'],
     chart: {
       animations: {
         enabled: firstDraw,
         speed: 400
       },
+      redrawOnWindowResize: false,
       toolbar: {
         show: false,
       },
@@ -54,7 +56,7 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
     xaxis: {
       categories: tenMostPlayedGames.map(a => `${a.name} (${a.system.toUpperCase()})`),
       labels: {
-        formatter: (a) => {return `${parseInt(a / 60)} min`},
+        formatter: (a) => {return `${Number(a / 60).toFixed(1)} hours`}, // format the result of series data
         style: {
           colors: [ '#bbb', ],
         }
