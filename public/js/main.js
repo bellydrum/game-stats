@@ -1558,7 +1558,7 @@ function renderHeaderCard(currentGameData) {
   currentlyPlaying.innerHTML = '';
   lastPlayed.innerHTML = '';
 
-  if (Object.keys(currentGame).length !== 0) {
+  if (currentGame.name.length) {
     /** a game is currently being played **/
     var currentGameLabel = document.createElement('div');
     currentGameLabel.className = "".concat(slightlyBolder, " ").concat(slightlySmaller);
