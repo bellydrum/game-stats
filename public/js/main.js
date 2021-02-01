@@ -1211,8 +1211,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 case 2:
                   initialDataLoad = _context8.sent;
-                  components.renderHeaderCard(initialDataLoad);
-                  console.log(initialDataLoad); // check if game data has been wiped
+                  components.renderHeaderCard(initialDataLoad); // check if game data has been wiped
 
                   app.gameDataExists = !!(initialDataLoad.current_game.name.length || initialDataLoad.previous_game.name.length); // start an interval of refreshing the page
 
@@ -1246,8 +1245,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                             if (app.currentlyActive) {
                               if (app.gameDataExists) {
-                                console.log('app game data exists...?');
-                                console.log(initialDataLoad);
                                 app.currentlyActiveTime = Date.now() - (0, _DateTimeUtil.getDateFromStoredDate)(currentGameData.current_game.time_started);
                               }
                             } // logging on: start chart refresh interval
@@ -1270,15 +1267,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     }, _callee7);
                   })), app.refreshFreqSeconds * 1000);
                   _context8.t0 = charts;
-                  _context8.next = 10;
+                  _context8.next = 9;
                   return app.getGamesData();
 
-                case 10:
+                case 9:
                   _context8.t1 = _context8.sent;
 
                   _context8.t0.renderCharts.call(_context8.t0, _context8.t1, true);
 
-                case 12:
+                case 11:
                 case "end":
                   return _context8.stop();
               }
