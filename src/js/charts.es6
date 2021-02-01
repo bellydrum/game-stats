@@ -75,12 +75,25 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames, firstDraw=false) {
         colors: ['#333']
       },
     },
+    states: {
+      active: {
+        filter: {
+          type: 'none'
+        }
+      }
+    },
     responsive: [{
       breakpoint: 768,
       options: {
-        // chart: {
-        //   width: '70%',
-        // },
+        xaxis: {
+          categories: tenMostPlayedGames.map(a => `${a.name} (${a.system.toUpperCase()})`),
+          labels: {
+            formatter: (a) => {return `${parseInt(a / 60)}`},
+            style: {
+              colors: [ '#bbb', ],
+            }
+          }
+        },
         yaxis: {
           labels: {
             maxWidth: 160,
@@ -102,8 +115,61 @@ function renderGamePlaytimeDivision(tenMostPlayedGames, firstDraw=false) {
 
   document.querySelector("#gamePlaytimeDivision").innerHTML = ''
 
+  // let options = {
+  //   series: tenMostPlayedGames.slice(0, 5).map(a => a.play_time_seconds),
+  //   labels: tenMostPlayedGames.slice(0, 5).map(a => `${a.name} (${a.system.toUpperCase()})`),
+  //   chart: {
+  //     type: 'donut',
+  //     animations: {
+  //       enabled: firstDraw,
+  //       speed: 400
+  //     },
+  //   },
+  //   legend: {
+  //     show: true,
+  //     position: 'right',
+  //     floating: true,
+  //     labels: {
+  //       colors: '#bbb'
+  //     }
+  //   },
+  //   dataLabels: {
+  //     enabled: false
+  //   },
+  //   plotOptions: {
+  //     pie: {
+  //       expandOnClick: false,
+  //       customScale: 0.5,
+  //       donut: {
+  //         size: '80%',
+  //       }
+  //     }
+  //   },
+  //   responsive: [{
+  //     breakpoint: 480,
+  //     options: {
+  //       chart: {
+  //         width: 200
+  //       },
+  //       legend: {
+  //         position: 'bottom',
+  //         floating: true
+  //       },
+  //       plotOptions: {
+  //         pie: {
+  //           customScale: 0.9,
+  //           donut: {
+  //             size: '70%',
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }]
+  // };
+
   let options = {
-    series: [44, 55, 41, 17, 15],
+      series: tenMostPlayedGames.slice(0, 5).map(a => a.play_time_seconds),
+      labels: tenMostPlayedGames.slice(0, 5).map(a => `${a.name} (${a.system.toUpperCase()})`),
     chart: {
       type: 'donut',
       animations: {
@@ -111,20 +177,39 @@ function renderGamePlaytimeDivision(tenMostPlayedGames, firstDraw=false) {
         speed: 400
       },
     },
+    dataLabels: {
+      enabled: false,
+    },
+    plotOptions: {
+      pie: {
+        customScale: 0.8,
+        expandOnClick: false,
+      }
+    },
+    legend: {
+        labels: {
+          colors: '#bbb'
+        }
+    },
     responsive: [{
       breakpoint: 480,
       options: {
         chart: {
-          width: 200
         },
         legend: {
           position: 'bottom'
-        }
+        },
+        plotOptions: {
+          pie: {
+            customScale: 1,
+            expandOnClick: false,
+          }
+        },
       }
     }]
-  };
+  }
 
   let chart = new ApexCharts(document.querySelector("#gamePlaytimeDivision"), options);
-  // chart.render();
+  chart.render();
 
 }

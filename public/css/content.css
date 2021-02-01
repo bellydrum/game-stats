@@ -4,13 +4,14 @@
 .section-panel {
     width: 100%;
     padding: 0px 10px;
-    /*height: 80vh;                                           !* hardcoded height *!*/
     filter: drop-shadow(5px 0px 16px rgb(26, 26, 26));      /* cast shadow on upper section */
     display: flex;
+    color: #bbb;
     /*align-items: center;*/
     /*justify-content: center;*/
     /*text-align: center;*/
     /*border: 1px dotted red;*/
+    /*min-height: 50vh;*/
 }
 /* panels with no charts */
 .section-panel.info-panel {
@@ -36,5 +37,13 @@
     /*background: linear-gradient(90deg, rgba(235,235,235,1) 0%, rgba(198,198,255,1) 100%);*/
     background: rgb(55,61,79);
     background: linear-gradient(90deg, rgba(55,61,79,1) 0%, rgba(4,6,13,1) 100%);
-    color: #bbb;
+}
+
+.chart-title {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.apexcharts-legend {
+    justify-content: center;
 }

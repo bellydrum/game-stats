@@ -34,7 +34,8 @@ import * as components from './components.es6'
       cookie: null,
       onDesktop: null,
       req: request,
-      refreshFreq: 500,
+      refreshFreqSeconds: .5,
+      gameDataExists: false,
       currentlyActive: false,
       currentlyActiveTime: 0,
       activityRefreshInterval: null,
@@ -281,10 +282,29 @@ import * as components from './components.es6'
        * General tools for app functionality
        */
       getGamesData: async () => {
-        return JSON.parse(await app.req('http://buttcentral.net/games'))
+        const data = await app.req('http://buttcentral.net/games')
+        return JSON.parse(data)
       },
       getCurrentGameData: async () => {
-        return JSON.parse(await app.req('http://buttcentral.net/latest_activity'))
+        const data = await app.req('http://buttcentral.net/latest_activity')
+        return JSON.parse(data)
+      },
+      createHeaderUpdateInterval: async () => {
+
+      },
+      createChartsUpdateInterval: async () => {
+        if(app.chartRefreshInterval === null) {
+          app.chartRefreshInterval = setInterval(async () => {
+            const gamesData = await app.getGamesData()
+            gamesData[app.currentGameData.current_game.name].play_time_seconds += parseInt(app.currentlyActiveTime / 1000)
+            charts.renderCharts(gamesData)
+            if(!app.currentlyActive) {
+              clearInterval(app.chartRefreshInterval)
+              app.chartRefreshInterval = null
+              charts.renderCharts(await app.getGamesData())
+            }
+          }, app.refreshFreqSeconds * 1000)
+        }
       },
 
       /**
@@ -314,42 +334,44 @@ import * as components from './components.es6'
       start: async () => {
 
         // render header with latest activity data
-        components.renderHeaderCard(await app.getCurrentGameData())
+        const initialDataLoad = await app.getCurrentGameData()
+        components.renderHeaderCard(initialDataLoad)
+
+        // check if game data has been wiped
+        app.gameDataExists = !!(initialDataLoad.current_game.name.length ||
+          initialDataLoad.previous_game.name.length)
 
         // start an interval of refreshing the page
         app.activityRefreshInterval = setInterval(async () => {
-
           // get latest activity data
           const currentGameData = await app.getCurrentGameData()
+
+          if(!(app.gameDataExists)) {
+            app.gameDataExists = !!(initialDataLoad.current_game.name.length ||
+              initialDataLoad.previous_game.name.length)
+          }
           // update activity data
           components.renderHeaderCard(currentGameData)
           // store current status for logoff check
           const statusFlag = app.currentlyActive
           // save current activity state
-          app.currentlyActive = Object.keys(currentGameData.current_game).length !== 0
+          app.currentlyActive = currentGameData.current_game.name !== ''
           // logging off: update charts
           if(statusFlag && !app.currentlyActive) {
             app.currentlyActiveTime = 0
           }
           // update time active and add it to current game time_played_seconds
           if(app.currentlyActive) {
-            if(Object.keys(currentGameData.current_game).length !== 0) {
+            if(app.gameDataExists) {
               app.currentlyActiveTime = Date.now() - getDateFromStoredDate(currentGameData.current_game.time_started)
             }
           }
           // logging on: start chart refresh interval
-          if(!statusFlag && app.currentlyActive) {
+          if(!statusFlag && app.currentlyActive && app.gameDataExists) {
             app.currentGameData = currentGameData
-            app.chartRefreshInterval = setInterval(async () => {
-              const gamesData = await app.getGamesData()
-              gamesData[app.currentGameData.current_game.name].play_time_seconds = parseInt(app.currentlyActiveTime / 1000)
-              charts.renderCharts(gamesData)
-              if(!app.currentlyActive) {
-                clearInterval(app.chartRefreshInterval)
-              }
-            }, app.refreshFreq)
+            await app.createChartsUpdateInterval()
           }
-        }, app.refreshFreq);
+        }, app.refreshFreqSeconds * 1000);
 
         charts.renderCharts(await app.getGamesData(), true)
       }

@@ -781,7 +781,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       cookie: null,
       onDesktop: null,
       req: _RequestUtil.request,
-      refreshFreq: 500,
+      refreshFreqSeconds: .5,
+      gameDataExists: false,
       currentlyActive: false,
       currentlyActiveTime: 0,
       activityRefreshInterval: null,
@@ -1022,19 +1023,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
        */
       getGamesData: function () {
         var _getGamesData = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+          var data;
           return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  _context.t0 = JSON;
-                  _context.next = 3;
+                  _context.next = 2;
                   return app.req('http://buttcentral.net/games');
 
-                case 3:
-                  _context.t1 = _context.sent;
-                  return _context.abrupt("return", _context.t0.parse.call(_context.t0, _context.t1));
+                case 2:
+                  data = _context.sent;
+                  return _context.abrupt("return", JSON.parse(data));
 
-                case 5:
+                case 4:
                 case "end":
                   return _context.stop();
               }
@@ -1050,19 +1051,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }(),
       getCurrentGameData: function () {
         var _getCurrentGameData = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+          var data;
           return regeneratorRuntime.wrap(function _callee2$(_context2) {
             while (1) {
               switch (_context2.prev = _context2.next) {
                 case 0:
-                  _context2.t0 = JSON;
-                  _context2.next = 3;
+                  _context2.next = 2;
                   return app.req('http://buttcentral.net/latest_activity');
 
-                case 3:
-                  _context2.t1 = _context2.sent;
-                  return _context2.abrupt("return", _context2.t0.parse.call(_context2.t0, _context2.t1));
+                case 2:
+                  data = _context2.sent;
+                  return _context2.abrupt("return", JSON.parse(data));
 
-                case 5:
+                case 4:
                 case "end":
                   return _context2.stop();
               }
@@ -1076,6 +1077,85 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
         return getCurrentGameData;
       }(),
+      createHeaderUpdateInterval: function () {
+        var _createHeaderUpdateInterval = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+          return regeneratorRuntime.wrap(function _callee3$(_context3) {
+            while (1) {
+              switch (_context3.prev = _context3.next) {
+                case 0:
+                case "end":
+                  return _context3.stop();
+              }
+            }
+          }, _callee3);
+        }));
+
+        function createHeaderUpdateInterval() {
+          return _createHeaderUpdateInterval.apply(this, arguments);
+        }
+
+        return createHeaderUpdateInterval;
+      }(),
+      createChartsUpdateInterval: function () {
+        var _createChartsUpdateInterval = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+            while (1) {
+              switch (_context5.prev = _context5.next) {
+                case 0:
+                  if (app.chartRefreshInterval === null) {
+                    app.chartRefreshInterval = setInterval( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+                      var gamesData;
+                      return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                        while (1) {
+                          switch (_context4.prev = _context4.next) {
+                            case 0:
+                              _context4.next = 2;
+                              return app.getGamesData();
+
+                            case 2:
+                              gamesData = _context4.sent;
+                              gamesData[app.currentGameData.current_game.name].play_time_seconds += parseInt(app.currentlyActiveTime / 1000);
+                              charts.renderCharts(gamesData);
+
+                              if (app.currentlyActive) {
+                                _context4.next = 13;
+                                break;
+                              }
+
+                              clearInterval(app.chartRefreshInterval);
+                              app.chartRefreshInterval = null;
+                              _context4.t0 = charts;
+                              _context4.next = 11;
+                              return app.getGamesData();
+
+                            case 11:
+                              _context4.t1 = _context4.sent;
+
+                              _context4.t0.renderCharts.call(_context4.t0, _context4.t1);
+
+                            case 13:
+                            case "end":
+                              return _context4.stop();
+                          }
+                        }
+                      }, _callee4);
+                    })), app.refreshFreqSeconds * 1000);
+                  }
+
+                case 1:
+                case "end":
+                  return _context5.stop();
+              }
+            }
+          }, _callee5);
+        }));
+
+        function createChartsUpdateInterval() {
+          return _createChartsUpdateInterval.apply(this, arguments);
+        }
+
+        return createChartsUpdateInterval;
+      }(),
 
       /**
        * ENTRY POINT
@@ -1083,10 +1163,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
        * The first and only function to be executed on page load.
        */
       activate: function () {
-        var _activate = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-          return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        var _activate = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+          return regeneratorRuntime.wrap(function _callee6$(_context6) {
             while (1) {
-              switch (_context3.prev = _context3.next) {
+              switch (_context6.prev = _context6.next) {
                 case 0:
                   /**
                    * Executes the following block in order to "activate" the application on page load.
@@ -1096,15 +1176,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   app.cookie = app.createCookieWrapper();
                   app.activateLinks();
                   app.activateListeners();
-                  _context3.next = 5;
+                  _context6.next = 5;
                   return app.start();
 
                 case 5:
                 case "end":
-                  return _context3.stop();
+                  return _context6.stop();
               }
             }
-          }, _callee3);
+          }, _callee6);
         }));
 
         function activate() {
@@ -1120,38 +1200,44 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
        * Behavior for the initial page load.
        */
       start: function () {
-        var _start = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
-          return regeneratorRuntime.wrap(function _callee6$(_context6) {
+        var _start = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+          var initialDataLoad;
+          return regeneratorRuntime.wrap(function _callee8$(_context8) {
             while (1) {
-              switch (_context6.prev = _context6.next) {
+              switch (_context8.prev = _context8.next) {
                 case 0:
-                  _context6.t0 = components;
-                  _context6.next = 3;
+                  _context8.next = 2;
                   return app.getCurrentGameData();
 
-                case 3:
-                  _context6.t1 = _context6.sent;
+                case 2:
+                  initialDataLoad = _context8.sent;
+                  components.renderHeaderCard(initialDataLoad);
+                  console.log(initialDataLoad); // check if game data has been wiped
 
-                  _context6.t0.renderHeaderCard.call(_context6.t0, _context6.t1);
+                  app.gameDataExists = !!(initialDataLoad.current_game.name.length || initialDataLoad.previous_game.name.length); // start an interval of refreshing the page
 
-                  // start an interval of refreshing the page
-                  app.activityRefreshInterval = setInterval( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+                  app.activityRefreshInterval = setInterval( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
                     var currentGameData, statusFlag;
-                    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                    return regeneratorRuntime.wrap(function _callee7$(_context7) {
                       while (1) {
-                        switch (_context5.prev = _context5.next) {
+                        switch (_context7.prev = _context7.next) {
                           case 0:
-                            _context5.next = 2;
+                            _context7.next = 2;
                             return app.getCurrentGameData();
 
                           case 2:
-                            currentGameData = _context5.sent;
-                            // update activity data
+                            currentGameData = _context7.sent;
+
+                            if (!app.gameDataExists) {
+                              app.gameDataExists = !!(initialDataLoad.current_game.name.length || initialDataLoad.previous_game.name.length);
+                            } // update activity data
+
+
                             components.renderHeaderCard(currentGameData); // store current status for logoff check
 
                             statusFlag = app.currentlyActive; // save current activity state
 
-                            app.currentlyActive = Object.keys(currentGameData.current_game).length !== 0; // logging off: update charts
+                            app.currentlyActive = currentGameData.current_game.name !== ''; // logging off: update charts
 
                             if (statusFlag && !app.currentlyActive) {
                               app.currentlyActiveTime = 0;
@@ -1159,63 +1245,45 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
                             if (app.currentlyActive) {
-                              if (Object.keys(currentGameData.current_game).length !== 0) {
+                              if (app.gameDataExists) {
+                                console.log('app game data exists...?');
+                                console.log(initialDataLoad);
                                 app.currentlyActiveTime = Date.now() - (0, _DateTimeUtil.getDateFromStoredDate)(currentGameData.current_game.time_started);
                               }
                             } // logging on: start chart refresh interval
 
 
-                            if (!statusFlag && app.currentlyActive) {
-                              app.currentGameData = currentGameData;
-                              app.chartRefreshInterval = setInterval( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-                                var gamesData;
-                                return regeneratorRuntime.wrap(function _callee4$(_context4) {
-                                  while (1) {
-                                    switch (_context4.prev = _context4.next) {
-                                      case 0:
-                                        _context4.next = 2;
-                                        return app.getGamesData();
-
-                                      case 2:
-                                        gamesData = _context4.sent;
-                                        gamesData[app.currentGameData.current_game.name].play_time_seconds = parseInt(app.currentlyActiveTime / 1000);
-                                        charts.renderCharts(gamesData);
-
-                                        if (!app.currentlyActive) {
-                                          clearInterval(app.chartRefreshInterval);
-                                        }
-
-                                      case 6:
-                                      case "end":
-                                        return _context4.stop();
-                                    }
-                                  }
-                                }, _callee4);
-                              })), app.refreshFreq);
+                            if (!(!statusFlag && app.currentlyActive && app.gameDataExists)) {
+                              _context7.next = 13;
+                              break;
                             }
 
-                          case 9:
+                            app.currentGameData = currentGameData;
+                            _context7.next = 13;
+                            return app.createChartsUpdateInterval();
+
+                          case 13:
                           case "end":
-                            return _context5.stop();
+                            return _context7.stop();
                         }
                       }
-                    }, _callee5);
-                  })), app.refreshFreq);
-                  _context6.t2 = charts;
-                  _context6.next = 9;
+                    }, _callee7);
+                  })), app.refreshFreqSeconds * 1000);
+                  _context8.t0 = charts;
+                  _context8.next = 10;
                   return app.getGamesData();
 
-                case 9:
-                  _context6.t3 = _context6.sent;
+                case 10:
+                  _context8.t1 = _context8.sent;
 
-                  _context6.t2.renderCharts.call(_context6.t2, _context6.t3, true);
+                  _context8.t0.renderCharts.call(_context8.t0, _context8.t1, true);
 
-                case 11:
+                case 12:
                 case "end":
-                  return _context6.stop();
+                  return _context8.stop();
               }
             }
-          }, _callee6);
+          }, _callee8);
         }));
 
         function start() {
@@ -1323,12 +1391,29 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
         colors: ['#333']
       }
     },
+    states: {
+      active: {
+        filter: {
+          type: 'none'
+        }
+      }
+    },
     responsive: [{
       breakpoint: 768,
       options: {
-        // chart: {
-        //   width: '70%',
-        // },
+        xaxis: {
+          categories: tenMostPlayedGames.map(function (a) {
+            return "".concat(a.name, " (").concat(a.system.toUpperCase(), ")");
+          }),
+          labels: {
+            formatter: function formatter(a) {
+              return "".concat(parseInt(a / 60));
+            },
+            style: {
+              colors: ['#bbb']
+            }
+          }
+        },
         yaxis: {
           labels: {
             maxWidth: 160,
@@ -1346,9 +1431,65 @@ function renderGamesWithMostPlaytime(tenMostPlayedGames) {
 
 function renderGamePlaytimeDivision(tenMostPlayedGames) {
   var firstDraw = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  document.querySelector("#gamePlaytimeDivision").innerHTML = '';
+  document.querySelector("#gamePlaytimeDivision").innerHTML = ''; // let options = {
+  //   series: tenMostPlayedGames.slice(0, 5).map(a => a.play_time_seconds),
+  //   labels: tenMostPlayedGames.slice(0, 5).map(a => `${a.name} (${a.system.toUpperCase()})`),
+  //   chart: {
+  //     type: 'donut',
+  //     animations: {
+  //       enabled: firstDraw,
+  //       speed: 400
+  //     },
+  //   },
+  //   legend: {
+  //     show: true,
+  //     position: 'right',
+  //     floating: true,
+  //     labels: {
+  //       colors: '#bbb'
+  //     }
+  //   },
+  //   dataLabels: {
+  //     enabled: false
+  //   },
+  //   plotOptions: {
+  //     pie: {
+  //       expandOnClick: false,
+  //       customScale: 0.5,
+  //       donut: {
+  //         size: '80%',
+  //       }
+  //     }
+  //   },
+  //   responsive: [{
+  //     breakpoint: 480,
+  //     options: {
+  //       chart: {
+  //         width: 200
+  //       },
+  //       legend: {
+  //         position: 'bottom',
+  //         floating: true
+  //       },
+  //       plotOptions: {
+  //         pie: {
+  //           customScale: 0.9,
+  //           donut: {
+  //             size: '70%',
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }]
+  // };
+
   var options = {
-    series: [44, 55, 41, 17, 15],
+    series: tenMostPlayedGames.slice(0, 5).map(function (a) {
+      return a.play_time_seconds;
+    }),
+    labels: tenMostPlayedGames.slice(0, 5).map(function (a) {
+      return "".concat(a.name, " (").concat(a.system.toUpperCase(), ")");
+    }),
     chart: {
       type: 'donut',
       animations: {
@@ -1356,19 +1497,38 @@ function renderGamePlaytimeDivision(tenMostPlayedGames) {
         speed: 400
       }
     },
+    dataLabels: {
+      enabled: false
+    },
+    plotOptions: {
+      pie: {
+        customScale: 0.8,
+        expandOnClick: false
+      }
+    },
+    legend: {
+      labels: {
+        colors: '#bbb'
+      }
+    },
     responsive: [{
       breakpoint: 480,
       options: {
-        chart: {
-          width: 200
-        },
+        chart: {},
         legend: {
           position: 'bottom'
+        },
+        plotOptions: {
+          pie: {
+            customScale: 1,
+            expandOnClick: false
+          }
         }
       }
     }]
   };
-  var chart = new ApexCharts(document.querySelector("#gamePlaytimeDivision"), options); // chart.render();
+  var chart = new ApexCharts(document.querySelector("#gamePlaytimeDivision"), options);
+  chart.render();
 }
 
 },{"./constants.es6":5,"./utils/DateTimeUtil.es6":7}],4:[function(require,module,exports){
@@ -1415,7 +1575,7 @@ function renderHeaderCard(currentGameData) {
     currentlyPlaying.append(currentGameTitle); // uncomment the next line to test game cover images
     // document.getElementById('current-game-image').classList.remove('is-hidden')
 
-    document.getElementById('last-updated-time').innerText = "As of ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(currentGame.time_started));
+    document.getElementById('last-updated-time').innerText = "As of ".concat((0, _DateTimeUtil.getTimeSinceStoredDate)(currentGame.time_started));
   } else {
     /** no game is being played **/
     var _currentGameLabel = document.createElement('div');
@@ -1435,7 +1595,7 @@ function renderHeaderCard(currentGameData) {
     _currentGameTitle.style.color = inactiveColor;
     currentlyPlaying.append(_currentGameTitle);
     document.getElementById('current-game-image').classList.add('is-hidden');
-    document.getElementById('last-updated-time').innerText = "As of ".concat((0, _DateTimeUtil.getTimeFromStoredDate)(lastGame.time_ended));
+    document.getElementById('last-updated-time').innerText = "As of ".concat((0, _DateTimeUtil.getTimeSinceStoredDate)(lastGame.time_ended));
   }
 
   var lastGameLabel = document.createElement('div');
@@ -1482,7 +1642,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.hourMinuteFormat = hourMinuteFormat;
 exports.convertStoredDateString = convertStoredDateString;
 exports.getDateFromStoredDate = getDateFromStoredDate;
-exports.getTimeFromStoredDate = getTimeFromStoredDate;
+exports.getTimeSinceStoredDate = getTimeSinceStoredDate;
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -1531,7 +1691,7 @@ function getDateFromStoredDate(storedDate) {
   }));
 }
 
-function getTimeFromStoredDate(date) {
+function getTimeSinceStoredDate(date) {
   return date ? time_ago(getDateFromStoredDate(date)) : '';
 }
 

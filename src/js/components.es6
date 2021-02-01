@@ -1,4 +1,4 @@
-import {getTimeFromStoredDate} from './utils/DateTimeUtil.es6'
+import {getTimeSinceStoredDate} from './utils/DateTimeUtil.es6'
 
 export function renderHeaderCard(currentGameData) {
 
@@ -40,7 +40,7 @@ export function renderHeaderCard(currentGameData) {
 
     // uncomment the next line to test game cover images
     // document.getElementById('current-game-image').classList.remove('is-hidden')
-    document.getElementById('last-updated-time').innerText = `As of ${getTimeFromStoredDate(currentGame.time_started)}`
+    document.getElementById('last-updated-time').innerText = `As of ${getTimeSinceStoredDate(currentGame.time_started)}`
   } else {
     /** no game is being played **/
 
@@ -57,7 +57,7 @@ export function renderHeaderCard(currentGameData) {
     currentlyPlaying.append(currentGameTitle)
 
     document.getElementById('current-game-image').classList.add('is-hidden')
-    document.getElementById('last-updated-time').innerText = `As of ${getTimeFromStoredDate(lastGame.time_ended)}`
+    document.getElementById('last-updated-time').innerText = `As of ${getTimeSinceStoredDate(lastGame.time_ended)}`
   }
 
   const lastGameLabel = document.createElement('div')

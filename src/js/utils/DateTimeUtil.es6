@@ -36,7 +36,7 @@ export function getDateFromStoredDate(storedDate) {
     .toLocaleString('en-us', { timeZone: 'CST' }))
 }
 
-export function getTimeFromStoredDate(date) {
+export function getTimeSinceStoredDate(date) {
   return date ? time_ago(getDateFromStoredDate(date)) : ''
 }
 
