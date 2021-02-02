@@ -1761,7 +1761,7 @@ function getDateFromStoredDate(storedDate) {
   var h = dateSplitOnSpace[0].split(':');
   var m = dateSplitOnSpace[1].split('-');
   return new Date(new Date("".concat(m[2], "-").concat(m[0], "-").concat(m[1], "T").concat(h[0], ":").concat(h[1], ":").concat(h[2])).toLocaleString('en-us', {
-    timeZone: 'CST'
+    timeZone: 'America/Chicago'
   }));
 }
 

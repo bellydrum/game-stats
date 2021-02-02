@@ -44,7 +44,7 @@ export function getDateFromStoredDate(storedDate) {
   const h = dateSplitOnSpace[0].split(':')
   const m = dateSplitOnSpace[1].split('-')
   return new Date(new Date(`${m[2]}-${m[0]}-${m[1]}T${h[0]}:${h[1]}:${h[2]}`)
-    .toLocaleString('en-us', { timeZone: 'CST' }))
+    .toLocaleString('en-us', { timeZone: 'America/Chicago' }))
 }
 
 export function getTimeSinceStoredDate(date) {
