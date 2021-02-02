@@ -40,6 +40,7 @@ import * as components from './components.es6'
       currentlyActiveTime: 0,
       activityRefreshInterval: null,
       chartRefreshInterval: null,
+      screenshotsUpdateInterval: null,
       currentGameData: {},
 
       /**
@@ -289,8 +290,43 @@ import * as components from './components.es6'
         const data = await app.req('http://buttcentral.net/latest_activity')
         return JSON.parse(data)
       },
+      getLatestScreenshotFilenames: async () => {
+        const filenames = await app.req('http://buttcentral.net/screenshots')
+        return JSON.parse(filenames)
+      },
       createHeaderUpdateInterval: async () => {
+        app.activityRefreshInterval = setInterval(async () => {
+          // get latest activity data
+          const currentGameData = await app.getCurrentGameData()
 
+          if(!(app.gameDataExists)) {
+            app.gameDataExists = !!(initialDataLoad.current_game.name.length ||
+              initialDataLoad.previous_game.name.length)
+          }
+          // update activity data
+          components.renderHeaderCard(currentGameData)
+          // store current status for logoff check
+          const statusFlag = app.currentlyActive
+          // save current activity state
+          app.currentlyActive = currentGameData.current_game.name !== ''
+
+          /** logging off: update charts **/
+          if(statusFlag && !app.currentlyActive) {
+            app.currentlyActiveTime = 0
+          }
+          // update time active and add it to current game time_played_seconds
+          if(app.currentlyActive) {
+            if(app.gameDataExists) {
+              app.currentlyActiveTime = Date.now() - getDateFromStoredDate(currentGameData.current_game.time_started)
+            }
+          }
+          /** logging on: start chart refresh interval **/
+          if(!statusFlag && app.currentlyActive && app.gameDataExists) {
+            app.currentGameData = currentGameData
+            await app.createChartsUpdateInterval()
+            // await app.createScreenshotsUpdateInterval()
+          }
+        }, app.refreshFreqSeconds * 1000);
       },
       createChartsUpdateInterval: async () => {
         if(app.chartRefreshInterval === null) {
@@ -306,6 +342,16 @@ import * as components from './components.es6'
           }, app.refreshFreqSeconds * 1000)
         }
       },
+      // createScreenshotsUpdateInterval: async () => {
+      //   if(app.screenshotsUpdateInterval === null) {
+      //     app.screenshotsUpdateInterval = setInterval(async () => {
+      //       const screenshotFilenames = await app.getLatestScreenshotFilenames()
+      //
+      //       const screenshot = screenshotFilenames[-1]
+      //       await renderScreenshotScroller(screenshot)
+      //     })
+      //   }
+      // },
 
       /**
        * ENTRY POINT
@@ -336,42 +382,14 @@ import * as components from './components.es6'
         // render header with latest activity data
         const initialDataLoad = await app.getCurrentGameData()
         components.renderHeaderCard(initialDataLoad)
+        components.renderScreenshotScroller(await app.getLatestScreenshotFilenames())
 
         // check if game data has been wiped
         app.gameDataExists = !!(initialDataLoad.current_game.name.length ||
           initialDataLoad.previous_game.name.length)
 
         // start an interval of refreshing the page
-        app.activityRefreshInterval = setInterval(async () => {
-          // get latest activity data
-          const currentGameData = await app.getCurrentGameData()
-
-          if(!(app.gameDataExists)) {
-            app.gameDataExists = !!(initialDataLoad.current_game.name.length ||
-              initialDataLoad.previous_game.name.length)
-          }
-          // update activity data
-          components.renderHeaderCard(currentGameData)
-          // store current status for logoff check
-          const statusFlag = app.currentlyActive
-          // save current activity state
-          app.currentlyActive = currentGameData.current_game.name !== ''
-          // logging off: update charts
-          if(statusFlag && !app.currentlyActive) {
-            app.currentlyActiveTime = 0
-          }
-          // update time active and add it to current game time_played_seconds
-          if(app.currentlyActive) {
-            if(app.gameDataExists) {
-              app.currentlyActiveTime = Date.now() - getDateFromStoredDate(currentGameData.current_game.time_started)
-            }
-          }
-          // logging on: start chart refresh interval
-          if(!statusFlag && app.currentlyActive && app.gameDataExists) {
-            app.currentGameData = currentGameData
-            await app.createChartsUpdateInterval()
-          }
-        }, app.refreshFreqSeconds * 1000);
+        await app.createHeaderUpdateInterval()
 
         charts.renderCharts(await app.getGamesData(), true)
       }

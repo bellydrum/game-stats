@@ -21,8 +21,11 @@
   "dependencies": {
     "@babel/polyfill": "7.12.1",
     "axios": "0.21.1",
+    "bulma-carousel": "4.0.4",
     "ejs": "3.1.5",
     "express": "4.17.1",
+    "install": "0.13.0",
+    "npm": "6.14.11",
     "regenerator-runtime": "0.13.7"
   },
   "devDependencies": {

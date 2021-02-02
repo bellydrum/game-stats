@@ -70,5 +70,20 @@ export function renderHeaderCard(currentGameData) {
   lastGameTitle.appendChild(document.createTextNode(`${lastGame.name} (${lastGame.system.toUpperCase()})`))
   lastGameTitle.style.fontStyle = 'italic'
   lastPlayed.append(lastGameTitle)
+}
 
+export function renderScreenshotScroller(screenshotFilenames, url="http://buttcentral.net/images/screenshots/gba/") {
+  const sortedScreenshotFilenames = screenshotFilenames.sort((a, b) => {
+    const x = a.substr(-17)
+    const y = b.substr(-17)
+    return x === y ? 0 : x < y ? -1 : 1
+  }).reverse().slice(0, 10).map(filename => {
+    return url + filename.replace(/\s/g, '%20')
+  })
+  Array.from(document.getElementsByClassName('carousel__snapper')).forEach((element, i) => {
+    const image = document.createElement('img')
+    image.setAttribute('src', sortedScreenshotFilenames[i])
+    image.classList.add('screenshot-scroller-img')
+    element.appendChild(image)
+  })
 }
