@@ -2,10 +2,10 @@
     75% {
         left: 0;
     }
-    95% {
+    90% {
         left: 100%;
     }
-    98% {
+    96% {
         left: 100%;
     }
     99% {
@@ -17,10 +17,10 @@
     75% {
         left: 0;
     }
-    95% {
+    90% {
         left: -300%;
     }
-    98% {
+    96% {
         left: -300%;
     }
     99% {
@@ -94,7 +94,7 @@ ol, li {
 }
 
 .carousel__slide:before {
-    content: counter(item);
+    /*content: counter(item);*/
     position: absolute;
     top: 50%;
     left: 50%;

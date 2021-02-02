@@ -72,21 +72,17 @@ export function renderHeaderCard(currentGameData) {
   lastPlayed.append(lastGameTitle)
 }
 
-export function renderScreenshotScroller(screenshotFilenames, url="http://buttcentral.net/images/screenshots/gba/") {
+export function renderScreenshotScroller(screenshotFilenames, numberOfScreenshots=20, url="http://buttcentral.net/images/screenshots/gba/") {
   const sortedScreenshotFilenames = screenshotFilenames.sort((a, b) => {
     const x = a.substr(-17)
     const y = b.substr(-17)
     return x === y ? 0 : x < y ? -1 : 1
-  }).reverse().slice(0, 10).map(filename => {
+  }).reverse().slice(0, numberOfScreenshots).map(filename => {
     return url + filename.replace(/\s/g, '%20')
   })
-  // Array.from(document.getElementsByClassName('carousel__snapper')).forEach((element, i) => {
-  //   const image = document.createElement('img')
-  //   image.setAttribute('src', sortedScreenshotFilenames[i])
-  //   image.classList.add('screenshot-scroller-img')
-  //   element.appendChild(image)
-  // })
+
   const carouselViewport = document.getElementById('carousel-image-container')
+
   sortedScreenshotFilenames.forEach((filename, i) => {
     const index = i + 1
 
@@ -116,12 +112,4 @@ export function renderScreenshotScroller(screenshotFilenames, url="http://buttce
 
     carouselViewport.appendChild(li)
   })
-  // carouselViewport.appendChild
 }
-
-// <li id="carousel__slide1" tabindex="0" class="carousel__slide">
-//     <div class="carousel__snapper">
-//         <a href="#carousel__slide4" class="carousel__prev">Go to last slide</a>
-//         <a href="#carousel__slide2" class="carousel__next">Go to next slide</a>
-//     </div>
-// </li>

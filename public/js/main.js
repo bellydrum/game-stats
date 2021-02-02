@@ -1640,20 +1640,15 @@ function renderHeaderCard(currentGameData) {
 }
 
 function renderScreenshotScroller(screenshotFilenames) {
-  var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "http://buttcentral.net/images/screenshots/gba/";
+  var numberOfScreenshots = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
+  var url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "http://buttcentral.net/images/screenshots/gba/";
   var sortedScreenshotFilenames = screenshotFilenames.sort(function (a, b) {
     var x = a.substr(-17);
     var y = b.substr(-17);
     return x === y ? 0 : x < y ? -1 : 1;
-  }).reverse().slice(0, 10).map(function (filename) {
+  }).reverse().slice(0, numberOfScreenshots).map(function (filename) {
     return url + filename.replace(/\s/g, '%20');
-  }); // Array.from(document.getElementsByClassName('carousel__snapper')).forEach((element, i) => {
-  //   const image = document.createElement('img')
-  //   image.setAttribute('src', sortedScreenshotFilenames[i])
-  //   image.classList.add('screenshot-scroller-img')
-  //   element.appendChild(image)
-  // })
-
+  });
   var carouselViewport = document.getElementById('carousel-image-container');
   sortedScreenshotFilenames.forEach(function (filename, i) {
     var index = i + 1;
@@ -1677,13 +1672,8 @@ function renderScreenshotScroller(screenshotFilenames) {
     div.appendChild(a2);
     li.appendChild(div);
     carouselViewport.appendChild(li);
-  }); // carouselViewport.appendChild
-} // <li id="carousel__slide1" tabindex="0" class="carousel__slide">
-//     <div class="carousel__snapper">
-//         <a href="#carousel__slide4" class="carousel__prev">Go to last slide</a>
-//         <a href="#carousel__slide2" class="carousel__next">Go to next slide</a>
-//     </div>
-// </li>
+  });
+}
 
 },{"./utils/DateTimeUtil.es6":7}],5:[function(require,module,exports){
 "use strict";
