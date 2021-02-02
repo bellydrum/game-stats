@@ -80,10 +80,48 @@ export function renderScreenshotScroller(screenshotFilenames, url="http://buttce
   }).reverse().slice(0, 10).map(filename => {
     return url + filename.replace(/\s/g, '%20')
   })
-  Array.from(document.getElementsByClassName('carousel__snapper')).forEach((element, i) => {
+  // Array.from(document.getElementsByClassName('carousel__snapper')).forEach((element, i) => {
+  //   const image = document.createElement('img')
+  //   image.setAttribute('src', sortedScreenshotFilenames[i])
+  //   image.classList.add('screenshot-scroller-img')
+  //   element.appendChild(image)
+  // })
+  const carouselViewport = document.getElementById('carousel-image-container')
+  sortedScreenshotFilenames.forEach((filename, i) => {
+    const index = i + 1
+
+    const li = document.createElement('li')
+    li.setAttribute('id', `carousel__slide${index}`)
+    li.setAttribute('tabindex', '0')
+    li.classList.add('carousel__slide')
+
+    const div = document.createElement('div')
+    div.classList.add('carousel__snapper')
+
     const image = document.createElement('img')
     image.setAttribute('src', sortedScreenshotFilenames[i])
     image.classList.add('screenshot-scroller-img')
-    element.appendChild(image)
+
+    const a1 = document.createElement('a')
+    a1.setAttribute('href', `#carousel_slide${index - 1}`)
+    a1.classList.add('carousel_prev')
+    const a2 = document.createElement('a')
+    a1.setAttribute('href', `#carousel_slide${index + 1}`)
+    a1.classList.add('carousel_prev')
+
+    div.appendChild(image)
+    div.appendChild(a1)
+    div.appendChild(a2)
+    li.appendChild(div)
+
+    carouselViewport.appendChild(li)
   })
+  // carouselViewport.appendChild
 }
+
+// <li id="carousel__slide1" tabindex="0" class="carousel__slide">
+//     <div class="carousel__snapper">
+//         <a href="#carousel__slide4" class="carousel__prev">Go to last slide</a>
+//         <a href="#carousel__slide2" class="carousel__next">Go to next slide</a>
+//     </div>
+// </li>

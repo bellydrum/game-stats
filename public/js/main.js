@@ -1647,14 +1647,43 @@ function renderScreenshotScroller(screenshotFilenames) {
     return x === y ? 0 : x < y ? -1 : 1;
   }).reverse().slice(0, 10).map(function (filename) {
     return url + filename.replace(/\s/g, '%20');
-  });
-  Array.from(document.getElementsByClassName('carousel__snapper')).forEach(function (element, i) {
+  }); // Array.from(document.getElementsByClassName('carousel__snapper')).forEach((element, i) => {
+  //   const image = document.createElement('img')
+  //   image.setAttribute('src', sortedScreenshotFilenames[i])
+  //   image.classList.add('screenshot-scroller-img')
+  //   element.appendChild(image)
+  // })
+
+  var carouselViewport = document.getElementById('carousel-image-container');
+  sortedScreenshotFilenames.forEach(function (filename, i) {
+    var index = i + 1;
+    var li = document.createElement('li');
+    li.setAttribute('id', "carousel__slide".concat(index));
+    li.setAttribute('tabindex', '0');
+    li.classList.add('carousel__slide');
+    var div = document.createElement('div');
+    div.classList.add('carousel__snapper');
     var image = document.createElement('img');
     image.setAttribute('src', sortedScreenshotFilenames[i]);
     image.classList.add('screenshot-scroller-img');
-    element.appendChild(image);
-  });
-}
+    var a1 = document.createElement('a');
+    a1.setAttribute('href', "#carousel_slide".concat(index - 1));
+    a1.classList.add('carousel_prev');
+    var a2 = document.createElement('a');
+    a1.setAttribute('href', "#carousel_slide".concat(index + 1));
+    a1.classList.add('carousel_prev');
+    div.appendChild(image);
+    div.appendChild(a1);
+    div.appendChild(a2);
+    li.appendChild(div);
+    carouselViewport.appendChild(li);
+  }); // carouselViewport.appendChild
+} // <li id="carousel__slide1" tabindex="0" class="carousel__slide">
+//     <div class="carousel__snapper">
+//         <a href="#carousel__slide4" class="carousel__prev">Go to last slide</a>
+//         <a href="#carousel__slide2" class="carousel__next">Go to next slide</a>
+//     </div>
+// </li>
 
 },{"./utils/DateTimeUtil.es6":7}],5:[function(require,module,exports){
 "use strict";
